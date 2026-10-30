@@ -1,66 +1,113 @@
-"use client"
-export default function Home() {
+'use client'
+import { useState } from 'react'
+
+export default function LandingPage() {
+  const [duration, setDuration] = useState(5)
+  const estimated = (duration * 0.5).toFixed(1)
+
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
-      {/* NAVBAR - Fliki Style */}
-      <nav className="flex justify-between items-center p-4 md:px-10 border-b border-zinc-800 sticky top-0 bg-black/80 backdrop-blur z-50">
-        <div className="font-bold text-xl">lifeAI 🔥 <span className="text-xs font-normal text-zinc-400 ml-2">Urdu AI Video Generator</span></div>
-        <a href="/dashboard" className="bg-white text-black px-5 py-2 rounded-full text-sm font-bold hover:bg-zinc-200">Dashboard</a>
+    <div className="bg-white text-black">
+      <nav className="bg-white border-b px-20 py-4 flex justify-between sticky top-0 z-50">
+        <div className="flex gap-10 items-center">
+          <div className="font-bold text-xl flex gap-2"><span className="bg-black text-white w-8 h-8 rounded flex items-center justify-center">L</span> lifeAI</div>
+          <div className="hidden lg:flex gap-6 text-sm">Explore ▼</div>
+        </div>
+        <div className="flex gap-3">
+          <button className="px-5 py-2 text-sm">Login</button>
+          <button className="bg-[#FF2E7E] text-white px-6 py-2.5 rounded-full text-sm">Sign up</button>
+        </div>
       </nav>
 
-      {/* HERO - Fliki Style */}
-      <section className="text-center py-16 md:py-24 px-6 max-w-6xl mx-auto">
-        <div className="inline-block bg-zinc-900 border border-zinc-800 px-4 py-1 rounded-full text-xs mb-6">⭐ Trusted by 5000+ Pakistani Creators</div>
-        <h1 className="text-4xl md:text-6xl font-extrabold leading-tight">
-          Urdu AI Video Generator <br/>
-          <span className="bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">Fliki Se 10x Better</span>
-        </h1>
-        <p className="text-zinc-400 mt-4 max-w-2xl mx-auto">Photo + Video Clips + Ratio + Audio + Auto Film — Fliki ka sara system, lekin Urdu voice + Pakistani pricing me</p>
-        <div className="flex gap-4 justify-center mt-8">
-          <a href="/dashboard" className="bg-red-600 hover:bg-red-700 px-8 py-3 rounded-full font-bold">Video Banao - Free Start</a>
-          <a href="#pricing" className="bg-zinc-800 px-8 py-3 rounded-full">Pricing Dekho</a>
-        </div>
-        {/* Mock Preview like Fliki */}
-        <div className="mt-12 bg-zinc-900 border border-zinc-800 rounded-2xl p-2 md:p-4 shadow-2xl">
-          <div className="bg-black rounded-xl h-[280px] flex items-center justify-center text-zinc-500">▶️ Your AI Video Preview Here (Fliki Style Player)</div>
-        </div>
-      </section>
+      <div className="bg-[#FF2E7E] text-white text-center py-2.5 text-sm">
+        Eid Sale! Use code <span className="bg-yellow-300 text-black px-2 rounded font-bold ml-2">LIFEAI40</span> for 40% off annual plans
+      </div>
 
-      {/* PRICING - Fliki 3 Columns */}
-      <section id="pricing" className="px-6 py-16 max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-8">Simple Pricing - Pakistan ke liye</h2>
-        <div className="grid md:grid-cols-3 gap-6">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-            <h3>Free</h3><p className="text-sm text-zinc-400">5 Videos / Day</p><p className="text-2xl font-bold mt-4">0 PKR</p>
-            <a href="/dashboard" className="block mt-6 bg-zinc-800 text-center py-2 rounded-full">Start Free</a>
-          </div>
-          <div className="bg-zinc-900 border-2 border-red-500 rounded-2xl p-6 relative">
-            <span className="absolute -top-3 left-6 bg-red-500 text-xs px-2 py-1 rounded-full">Most Popular</span>
-            <h3>Standard</h3><p className="text-sm text-zinc-400">60 Long + 60 Short</p><p className="text-2xl font-bold mt-4">8,000 PKR</p>
-            <a href="/dashboard" className="block mt-6 bg-red-600 text-center py-2 rounded-full font-bold">Buy Standard</a>
-          </div>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-            <h3>Premium</h3><p className="text-sm text-zinc-400">120 Long + 120 Short</p><p className="text-2xl font-bold mt-4">15,000 PKR</p>
-            <a href="/dashboard" className="block mt-6 bg-zinc-800 text-center py-2 rounded-full">Buy Premium</a>
-          </div>
+      <div className="text-center py-14">
+        <p className="text-[11px] tracking-[0.2em] text-gray-500 font-semibold">SIMPLE, TRANSPARENT PRICING</p>
+        <h1 className="text-5xl font-extrabold mt-4">Your AI partner for <span className="text-[#FF2E7E]">video creation</span></h1>
+        <p className="text-gray-600 mt-4">Free forever. Upgrade for more credits, longer videos, more Urdu voices, and HD exports.</p>
+        <div className="mt-7 inline-flex bg-gray-100 rounded-full p-1.5">
+          <button className="bg-black text-white px-7 py-2 rounded-full text-sm">Monthly</button>
+          <button className="px-7 py-2 text-sm text-gray-600">Yearly <span className="text-[#FF2E7E]">⚡ 40% off</span></button>
         </div>
-      </section>
+      </div>
 
-      {/* REVIEWS + COMPLAIN - Fliki Social Proof */}
-      <section className="px-6 pb-20 max-w-6xl mx-auto grid md:grid-cols-2 gap-6">
-        <div className="bg-zinc-900 p-5 rounded-xl border border-zinc-800">
-          <h4 className="font-bold">Reviews Box ⭐⭐⭐⭐⭐</h4>
-          <p className="text-sm text-zinc-300 mt-2">"lifeAI ne meri earning double kardi" - Ahmed, Lahore</p>
-          <p className="text-sm text-zinc-300 mt-1">"Fliki se sasta aur Urdu best hai" - Fatima, Karachi</p>
+      <div className="grid lg:grid-cols-3 gap-6 px-20 pb-20">
+        <div className="border rounded-[20px] p-8">
+          <h3 className="font-semibold">Basic</h3>
+          <p className="text-sm text-gray-500">For beginners</p>
+          <ul className="mt-8 space-y-3 text-sm">
+            <li>✓ 60 credits per month</li>
+            <li>✓ 1000 voices with 200 ultra-realistic</li>
+            <li>✓ Full HD - 1080p videos</li>
+            <li>✓ Premium stock images, video clips & music</li>
+            <li>✓ Videos upto 5 minutes</li>
+            <li>✓ Commercial rights</li>
+          </ul>
+          <p className="font-bold mt-8">Rs 2,299 / per month</p>
+          <button className="w-full mt-5 border rounded-full py-3 text-sm">Start for free →</button>
         </div>
-        <div className="bg-zinc-900 p-5 rounded-xl border border-zinc-800">
-          <h4 className="font-bold">Complain Box</h4>
-          <input placeholder="Apni shikayat likhein..." className="w-full mt-3 p-3 rounded-lg bg-black border border-zinc-800 text-sm" />
-          <button className="mt-3 bg-white text-black px-4 py-1 rounded-full text-sm">Send</button>
-        </div>
-      </section>
 
-      <footer className="text-center text-zinc-500 text-xs py-8 border-t border-zinc-800">© 2026 lifeAI - Fliki Alternative for Pakistan</footer>
+        <div className="border-2 border-[#FF2E7E] rounded-[20px] p-8 relative">
+          <span className="absolute -top-3 right-6 bg-[#FF2E7E] text-white text-[11px] px-3 py-1 rounded-full font-bold">⭐ MOST POPULAR</span>
+          <h3 className="font-semibold">Standard</h3>
+          <p className="text-sm text-gray-500">For creators venturing into AI video production.</p>
+          <ul className="mt-6 space-y-3 text-sm">
+            <li>✓ 180 credits per month</li>
+            <li>✓ 1000 voices with 500 ultra-realistic</li>
+            <li>✓ Videos upto 15 minutes, 60+ languages</li>
+            <li>✓ Voice cloning + limited stock avatars</li>
+            <li>✓ Custom characters + Series</li>
+            <li>✓ AI Playground & commercial rights</li>
+          </ul>
+          <p className="font-bold text-lg mt-8">Rs 7,799 per user / per month</p>
+          <button className="w-full mt-5 bg-[#FF2E7E] text-white rounded-full py-3.5 text-sm">Start for free →</button>
+        </div>
+
+        <div className="border rounded-[20px] p-8">
+          <h3 className="font-semibold">Premium</h3>
+          <p className="text-sm text-gray-500">For professional teams & studios</p>
+          <ul className="mt-8 space-y-3 text-sm">
+            <li>✓ 600 credits per month</li>
+            <li>✓ 2300+ voices, 1000+ ultra-realistic</li>
+            <li>✓ Videos upto 40 minutes</li>
+            <li>✓ Generate AI video clips + photo avatars</li>
+            <li>✓ All AI avatars + multiple voice cloning</li>
+            <li>✓ Multiple brand kits, priority support</li>
+            <li>✓ API access</li>
+          </ul>
+          <p className="font-bold mt-8">Rs 23,999 per user / per month</p>
+          <button className="w-full mt-5 border rounded-full py-3 text-sm">Start for free →</button>
+        </div>
+      </div>
+
+      <div className="bg-[#FAFAFA] border-y px-20 py-12 grid lg:grid-cols-2 gap-10">
+        <div>
+          <p className="text-[11px] tracking-widest text-gray-500 font-bold">PRICING CALCULATOR</p>
+          <h2 className="text-3xl font-bold mt-2">Estimate your credits</h2>
+          <div className="mt-10">
+            <div className="flex justify-between text-xs"><span>VIDEO DURATION</span><span>{duration} mins</span></div>
+            <input type="range" min="1" max="30" value={duration} onChange={e=>setDuration(Number(e.target.value))} className="w-full mt-3 accent-black" />
+            <div className="flex justify-between text-xs text-gray-400 mt-1"><span>1 MIN</span><span>30 MIN</span></div>
+          </div>
+        </div>
+        <div className="bg-[#0F172A] rounded-[24px] p-10 text-center text-white">
+          <p className="text-[#FF2E7E] text-[11px] tracking-widest font-bold">ESTIMATED CREDITS</p>
+          <h1 className="text-6xl font-bold mt-6">{estimated} Credits</h1>
+          <p className="text-gray-400 text-sm mt-2">0.5 credits / min</p>
+        </div>
+      </div>
+
+      <div className="py-12 text-center bg-white">
+        <div className="flex justify-center gap-6">
+          <div className="border px-12 py-6 rounded-2xl font-bold">14M+ USERS WORLDWIDE</div>
+          <div className="border px-12 py-6 rounded-2xl font-bold">80+ LANGUAGES SUPPORTED</div>
+        </div>
+        <p className="mt-10 text-xs tracking-widest text-gray-500">TRUSTED BY 50,000+ COMPANIES</p>
+        <div className="flex justify-center gap-8 mt-4 text-gray-400 text-sm">TOYOTA TATA ByteDance MetLife SIEMENS PayPal</div>
+      </div>
+
+      <div className="fixed bottom-6 right-6 w-14 h-14 bg-[#FF2E7E] rounded-full flex items-center justify-center text-white text-xl shadow-lg">💬</div>
     </div>
   )
 }
