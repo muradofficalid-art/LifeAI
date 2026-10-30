@@ -22,7 +22,7 @@ export default function Home(){
         </nav>
       </div>
 
-      {/* HERO - tumhara purana wala same rakha */}
+      {/* HERO */}
       <div style={{textAlign:'center', padding:'28px 16px 12px', maxWidth:'720px', margin:'0 auto'}}>
         <h1 style={{fontSize:'36px', fontWeight:900, lineHeight:'1.05', letterSpacing:'-1.2px'}}>Turn idea into videos<br/>with AI voices</h1>
         <p style={{fontSize:'13px', color:'#64748B', marginTop:'12px'}}>Transform your ideas into stunning videos with AI video generator.</p>
@@ -35,7 +35,7 @@ export default function Home(){
         </div>
       </div>
 
-      {/* FAQ SECTION - Fliki exact */}
+      {/* FAQ */}
       <div style={{maxWidth:'720px', margin:'20px auto', padding:'0 12px', display:'grid', gap:'12px'}}>
         <div style={{background:'white', border:'1px solid #FFE3EC', borderRadius:'16px', padding:'16px'}}>
           <h3 style={{fontSize:'16px', fontWeight:700}}>Can AI-generated videos be used commercially?</h3>
@@ -47,7 +47,7 @@ export default function Home(){
         </div>
       </div>
 
-      {/* DARK CTA CARD - Exact Fliki */}
+      {/* DARK CTA */}
       <div style={{maxWidth:'720px', margin:'28px auto', padding:'0 12px'}}>
         <div style={{background:'#1A102E', borderRadius:'28px', padding:'28px 20px', textAlign:'center'}}>
           <span style={{background:'#2A1F45', color:'#C9B8FF', fontSize:'11px', padding:'6px 14px', borderRadius:'999px', border:'1px solid #3A2F55'}}>• Trusted by 14M+ creators worldwide</span>
@@ -57,9 +57,12 @@ export default function Home(){
         </div>
       </div>
 
-      {/* FOOTER - Exact Fliki footer */}
-      <div style={{background:'#0E0A1F', color:'white', padding:'32px 16px 20px', borderRadius:'0'}}>
-        <div style={{fontSize:'32px', fontWeight:900}}>⚙ Fliki</div>
+      {/* FOOTER - FIXED */}
+      <div style={{background:'#0E0A1F', color:'white', padding:'32px 16px 20px'}}>
+        <div style={{fontSize:'28px', fontWeight:900, display:'flex', alignItems:'center', gap:'8px'}}>
+          <span style={{background:'#FF1E5E', width:'32px', height:'32px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', color:'white', fontSize:'16px'}}>•</span> 
+          Life-AI
+        </div>
         <p style={{color:'#8B869E', fontSize:'14px', marginTop:'12px', lineHeight:'1.6'}}>Create studio-quality videos from scripts, ideas, and long-form content in minutes with lifelike voices.</p>
         <p style={{color:'#FF8DB0', fontSize:'13px', marginTop:'12px'}}>4.8/5 on G2 and Capterra</p>
         
@@ -95,12 +98,12 @@ export default function Home(){
         </div>
 
         <div style={{borderTop:'1px solid #1E1A32', marginTop:'32px', paddingTop:'16px', textAlign:'center'}}>
-          <p style={{color:'#6B6780', fontSize:'11px'}}>© 2026 Nine Thirty Five. All rights reserved.</p>
+          <p style={{color:'#6B6780', fontSize:'11px'}}>© 2026 Life-AI. All rights reserved.</p>
           <p style={{color:'#8B869E', fontSize:'12px', marginTop:'8px'}}>Privacy · Terms · Cookies</p>
         </div>
 
         <div style={{background:'#1A1630', borderRadius:'16px', padding:'20px', marginTop:'24px'}}>
-          <p style={{fontSize:'16px', fontWeight:700}}>Earn recurring commissions with the Fliki affiliate program.</p>
+          <p style={{fontSize:'16px', fontWeight:700}}>Earn recurring commissions with the Life-AI affiliate program.</p>
           <Link href="/signup" style={{background:'#FF1E5E', color:'white', padding:'10px 18px', borderRadius:'999px', fontSize:'13px', fontWeight:700, textDecoration:'none', display:'inline-block', marginTop:'16px'}}>Become an Affiliate</Link>
         </div>
       </div>
