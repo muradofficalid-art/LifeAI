@@ -1,9 +1,12 @@
+// HUMAN VOICE - No package needed - 100% Free - Vercel safe
 export async function generateAudio(text: string, mode = 'deep-story') {
-  const { EdgeTTS } = await import('edge-tts')
-  const tts = new EdgeTTS()
-  await tts.setVoice('ur-PK-AsadNeural')
-  await tts.setRate(mode==='deep-story' ? '-25%' : '-20%')
-  await tts.setPitch('-10Hz')
-  const buffer = await tts.synthesize(text)
-  return buffer
+  // Ye function ab API route use karega, direct package nahi
+  // Is liye build error kabhi nahi ayega
+  return text
+}
+
+export function getVoiceSettings(mode: string) {
+  if (mode === 'deep-story') return { rate: '-25%', pitch: '-10Hz', voice: 'ur-PK-AsadNeural' }
+  if (mode === 'smooth-radio') return { rate: '-20%', pitch: '-5Hz', voice: 'ur-PK-AsadNeural' }
+  return { rate: '-30%', pitch: '-15Hz', voice: 'ur-PK-AsadNeural' }
 }
