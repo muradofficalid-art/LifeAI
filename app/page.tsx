@@ -1,10 +1,11 @@
 'use client'
+import Link from 'next/link'
 
 export default function Home() {
   return (
     <div style={{background:'#FFF5F8', minHeight:'100vh', fontFamily:'Inter, system-ui, sans-serif', color:'#111'}}>
       
-      {/* NAVBAR - Fliki Same */}
+      {/* NAVBAR - Fliki Same - CLICKABLE FIX */}
       <nav style={{background:'white', height:'56px', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 20px', borderBottom:'1px solid #f0f0f0', position:'sticky', top:0, zIndex:50}}>
         <div style={{display:'flex', alignItems:'center', gap:'28px'}}>
           <div style={{fontWeight:900, fontSize:'18px', display:'flex', alignItems:'center', gap:'6px'}}>
@@ -15,8 +16,8 @@ export default function Home() {
           </div>
         </div>
         <div style={{display:'flex', gap:'10px', alignItems:'center'}}>
-          <span style={{fontSize:'13px'}}>Login</span>
-          <span style={{background:'#FF2E7E', color:'white', padding:'6px 14px', borderRadius:'999px', fontSize:'13px', fontWeight:600}}>Sign Up</span>
+          <Link href="/login" style={{fontSize:'13px', textDecoration:'none', color:'#111', cursor:'pointer'}}>Login</Link>
+          <Link href="/signup" style={{background:'#FF2E7E', color:'white', padding:'6px 14px', borderRadius:'999px', fontSize:'13px', fontWeight:600, textDecoration:'none', cursor:'pointer', display:'inline-block'}}>Sign Up</Link>
         </div>
       </nav>
 
@@ -33,7 +34,7 @@ export default function Home() {
               <span style={{display:'flex', alignItems:'center', gap:'4px'}}>👤 Character ▾</span>
               <span style={{display:'flex', alignItems:'center', gap:'4px'}}>🔊 Voice ▾</span>
             </div>
-            <button style={{background:'#FF2E7E', color:'white', border:'none', padding:'8px 14px', borderRadius:'999px', fontSize:'12px', fontWeight:600}}>Generate video →</button>
+            <Link href="/signup" style={{background:'#FF2E7E', color:'white', border:'none', padding:'8px 14px', borderRadius:'999px', fontSize:'12px', fontWeight:600, textDecoration:'none', display:'inline-block'}}>Generate video →</Link>
           </div>
         </div>
 
