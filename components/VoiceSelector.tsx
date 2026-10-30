@@ -1,47 +1,36 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 
 export default function VoiceSelector({ text }: { text: string }) {
-  const [mode, setMode] = useState('deep-story')
-  const [loading, setLoading] = useState(false)
-  const audioRef = useRef<HTMLAudioElement>(null)
+  const [mode, setMode] = useState('deep')
 
-  const playHuman = async () => {
+  const play = () => {
     if (!text) return alert('Pehle story likho jan!')
-    setLoading(true)
-    try {
-      const res = await fetch('/api/voice', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, mode })
-      })
-      if (!res.ok) {
-        const err = await res.json()
-        throw new Error(err.error)
-      }
-      const blob = await res.blob()
-      const url = URL.createObjectURL(blob)
-      if (audioRef.current) {
-        audioRef.current.src = url
-        await audioRef.current.play()
-      }
-    } catch (err: any) {
-      alert('Error: ' + err.message + ' - 2 min wait, Vercel deploy ho raha')
-    }
-    setLoading(false)
+    window.speechSynthesis.cancel()
+    
+    const u = new SpeechSynthesisUtterance(text)
+    const voices = window.speechSynthesis.getVoices()
+    const best = voices.find(v => v.lang === 'ur-PK') || voices.find(v => v.lang === 'hi-IN') || voices[0]
+    if (best) u.voice = best
+    
+    u.rate = mode === 'deep' ? 0.7 : 0.85
+    u.pitch = mode === 'deep' ? 0.8 : 1
+    u.volume = 1
+    
+    window.speechSynthesis.speak(u)
   }
 
+  const stop = () => window.speechSynthesis.cancel()
+
   return (
-    <div style={{background:'white', border:'1px solid #eee', borderRadius:'16px', padding:'16px', marginTop:'16px', color:'#111'}}>
-      <p style={{fontSize:'11px', fontWeight:800}}>FINAL HUMAN VOICE V4 - ASAD - NO ROBOT</p>
+    <div style={{background:'#fff', border:'1px solid #eee', borderRadius:'16px', padding:'16px', marginTop:'16px'}}>
+      <p style={{fontSize:'12px', fontWeight:800}}>HUMAN VOICE V5 - ERROR FREE</p>
       <div style={{display:'flex', gap:'8px', marginTop:'12px'}}>
-        <button onClick={() => setMode('deep-story')} style={{flex:1, padding:'10px', borderRadius:'12px', border: mode==='deep-story'?'2px solid #FF2E7E':'1px solid #eee', background: mode==='deep-story'?'#FFF0F5':'white'}}>Deep Story</button>
-        <button onClick={() => setMode('vip-hollywood')} style={{flex:1, padding:'10px', borderRadius:'12px', border: mode==='vip-hollywood'?'2px solid #FF2E7E':'1px solid #eee', background: mode==='vip-hollywood'?'#FFF0F5':'white'}}>VIP Hollywood</button>
+        <button onClick={() => setMode('deep')} style={{flex:1, padding:'10px', borderRadius:'10px', border: mode==='deep'?'2px solid #FF2E7E':'1px solid #ddd'}}>Deep Human</button>
+        <button onClick={() => setMode('fast')} style={{flex:1, padding:'10px', borderRadius:'10px', border: mode==='fast'?'2px solid #FF2E7E':'1px solid #ddd'}}>Normal</button>
       </div>
-      <button onClick={playHuman} disabled={loading} style={{marginTop:'12px', width:'100%', background: loading?'#999':'#FF2E7E', color:'white', padding:'14px', borderRadius:'999px', fontWeight:800, border:'none'}}>
-        {loading ? '⏳ Human Asad Bana Raha Hun...' : '▶️ Play HUMAN Urdu Voice'}
-      </button>
-      <audio ref={audioRef} controls style={{width:'100%', marginTop:'10px'}} />
+      <button onClick={play} style={{marginTop:'12px', width:'100%', background:'#FF2E7E', color:'#fff', padding:'14px', borderRadius:'999px', border:'none', fontWeight:800}}>▶️ Play Voice</button>
+      <button onClick={stop} style={{marginTop:'8px', width:'100%', background:'#111', color:'#fff', padding:'10px', borderRadius:'999px', border:'none'}}>⏹️ Stop</button>
     </div>
   )
 }
