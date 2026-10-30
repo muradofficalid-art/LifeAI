@@ -1,29 +1,21 @@
 import { NextResponse } from 'next/server'
+import { generateAudio } from '@/lib/audio'
 
 export async function POST(req: Request) {
   try {
     const { text, mode = 'deep-story', lang = 'ur' } = await req.json()
-    
-    if (!text) return NextResponse.json({ error: 'Text do jan' }, { status: 400 })
+    if (!text) return NextResponse.json({ error: 'Text chahiye jan' }, { status: 400 })
 
-    // FREE Edge TTS - No API Key - Rs 0
-    const voice = lang === 'ur' ? 'ur-PK-AsadAPM' : 'hi-IN-MadhurNeural'
-    const rate = mode === 'deep-story' ? '-25%' : mode === 'smooth-radio' ? '-20%' : '-30%'
-    
-    // Simple free TTS endpoint (works without key)
-    const ttsUrl = `https://eastus.api.speech.microsoft.com/cognitiveservices/v1?voice=${voice}`
-    
-    // For now return success - actual audio generation in next step
-    return NextResponse.json({ 
-      success: true, 
-      mode, 
-      voice, 
-      rate,
-      message: `Voice ready: ${mode} - Cost Rs 0`,
-      text: text.substring(0, 50)
+    const audioBuffer = await generateAudio(text, mode, lang)
+
+    return new NextResponse(audioBuffer, {
+      headers: {
+        'Content-Type': 'audio/mpeg',
+        'Content-Disposition': 'inline; filename="story.mp3"',
+      },
     })
-    
   } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 })
+    console.error(e)
+    return NextResponse.json({ error: 'Voice fail: ' + e.message }, { status: 500 })
   }
 }
