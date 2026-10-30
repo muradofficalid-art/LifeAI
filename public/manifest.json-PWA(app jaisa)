@@ -1,0 +1,9 @@
+{
+  "name": "lifeAI - Urdu AI Video Generator",
+  "short_name": "lifeAI",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#ff3b30",
+  "icons": [{"src": "/icon.png","sizes": "512x512","type": "image/png"}]
+}
