@@ -21,18 +21,21 @@ export default function Home(){
     `}</style>
     <div style={{background:THEME.bg, minHeight:'100vh', overflowX:'hidden'}}>
 
-      {/* NAV - Dark Glass Pill */}
+      {/* NAV - Dark Glass Pill - PRICING ADDED */}
       <div style={{position:'sticky', top:'12px', zIndex:50, padding:'0 12px'}}>
         <nav style={{background:'rgba(26,22,48,0.85)', backdropFilter:'blur(12px)', height:'56px', borderRadius:'999px', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 14px 0 16px', boxShadow:'0 8px 32px rgba(0,0,0,0.4)', border:`1px solid ${THEME.cardBorder}`, maxWidth:'1120px', margin:'0 auto'}}>
           <div style={{fontWeight:900, fontSize:'20px', color:'white', display:'flex', alignItems:'center', gap:'8px'}}>
             <span style={{background:THEME.primary, width:'28px', height:'28px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'14px'}}>•</span>
             Life-AI
           </div>
-          <Link href="/signup" style={{background:THEME.primary, color:'white', padding:'8px 16px', borderRadius:'999px', fontSize:'13px', fontWeight:700, textDecoration:'none', boxShadow:`0 0 20px ${THEME.primary}40`}}>Get started →</Link>
+          <div style={{display:'flex', alignItems:'center', gap:'16px'}}>
+            <Link href="/pricing" style={{color:THEME.muted, fontSize:'13px', fontWeight:600, textDecoration:'none'}}>Pricing</Link>
+            <Link href="/signup" style={{background:THEME.primary, color:'white', padding:'8px 16px', borderRadius:'999px', fontSize:'13px', fontWeight:700, textDecoration:'none', boxShadow:`0 0 20px ${THEME.primary}40`}}>Get started →</Link>
+          </div>
         </nav>
       </div>
 
-      {/* HERO - Cinematic */}
+      {/* HERO - Cinematic - 2 BUTTONS ADDED */}
       <div style={{textAlign:'center', padding:'48px 16px 20px', maxWidth:'720px', margin:'0 auto'}}>
         <span style={{background:THEME.card, color:THEME.accent, fontSize:'11px', padding:'6px 14px', borderRadius:'999px', border:`1px solid ${THEME.cardBorder}`}}>• AI Video Generator • Cinematic 8K</span>
         <h1 style={{fontSize:'38px', fontWeight:900, lineHeight:'1.05', letterSpacing:'-1.5px', color:'white', marginTop:'18px'}}>Turn idea into videos<br/><span style={{color:THEME.accent}}>with AI voices</span></h1>
@@ -44,6 +47,12 @@ export default function Home(){
             <span style={{fontSize:'12px', fontWeight:600, color:THEME.accent}}>🔊 Voice ▾</span>
             <Link href="/signup" style={{background:THEME.primary, color:'white', padding:'9px 16px', borderRadius:'999px', fontSize:'12px', fontWeight:700, textDecoration:'none', boxShadow:`0 0 20px ${THEME.primary}50`}}>Generate video →</Link>
           </div>
+        </div>
+
+        {/* NEW - HERO CTA WITH PRICING */}
+        <div style={{display:'flex', gap:'12px', justifyContent:'center', marginTop:'28px', flexWrap:'wrap'}}>
+          <Link href="/signup" style={{background:THEME.primary, color:'white', padding:'14px 28px', borderRadius:'999px', fontSize:'14px', fontWeight:700, textDecoration:'none', boxShadow:`0 0 30px ${THEME.primary}50`}}>Get started for free →</Link>
+          <Link href="/pricing" style={{background:THEME.card, color:'white', padding:'14px 28px', borderRadius:'999px', fontSize:'14px', fontWeight:700, textDecoration:'none', border:`1px solid ${THEME.cardBorder}`}}>View pricing • Rs 8k</Link>
         </div>
       </div>
 
@@ -64,12 +73,15 @@ export default function Home(){
         <div style={{background:`radial-gradient(600px at 50% -20%, ${THEME.primary}15, transparent), ${THEME.card}`, borderRadius:'28px', padding:'32px 20px', textAlign:'center', border:`1px solid ${THEME.cardBorder}`, boxShadow:'0 20px 60px rgba(0,0,0,0.5)'}}>
           <span style={{background:THEME.bg, color:THEME.accent, fontSize:'11px', padding:'6px 14px', borderRadius:'999px', border:`1px solid ${THEME.cardBorder}`}}>• Trusted by 14M+ creators worldwide</span>
           <h2 style={{color:'white', fontSize:'28px', fontWeight:900, lineHeight:'1.2', marginTop:'18px'}}>Start creating videos<br/>with AI today</h2>
-          <Link href="/signup" style={{background:THEME.primary, color:'white', padding:'14px 28px', borderRadius:'999px', fontSize:'15px', fontWeight:700, textDecoration:'none', display:'inline-block', marginTop:'20px', boxShadow:`0 0 30px ${THEME.primary}60`}}>Get started for free →</Link>
+          <div style={{display:'flex', gap:'12px', justifyContent:'center', marginTop:'20px', flexWrap:'wrap'}}>
+            <Link href="/signup" style={{background:THEME.primary, color:'white', padding:'14px 28px', borderRadius:'999px', fontSize:'15px', fontWeight:700, textDecoration:'none', boxShadow:`0 0 30px ${THEME.primary}60`}}>Get started for free →</Link>
+            <Link href="/pricing" style={{background:'transparent', color:THEME.muted, padding:'14px 22px', borderRadius:'999px', fontSize:'14px', fontWeight:600, textDecoration:'none', border:`1px solid ${THEME.cardBorder}`}}>See Rs 8k plan</Link>
+          </div>
           <p style={{color:THEME.muted, fontSize:'12px', marginTop:'16px', lineHeight:'1.5'}}>Join 14M+ creators using Life-AI's AI video generator. Free plan - no credit card required.</p>
         </div>
       </div>
 
-      {/* FOOTER - Same as Dashboard */}
+      {/* FOOTER - PRICING ADDED */}
       <div style={{background:'#090612', color:'white', padding:'32px 16px 20px', borderTop:`1px solid ${THEME.cardBorder}`, marginTop:'32px'}}>
         <div style={{fontSize:'28px', fontWeight:900, display:'flex', alignItems:'center', gap:'8px'}}>
           <span style={{background:THEME.primary, width:'32px', height:'32px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', color:'white', fontSize:'16px'}}>•</span> 
@@ -82,11 +94,20 @@ export default function Home(){
           {['📷','in','X','▶️','f','✉️'].map((s,i)=><span key={i} style={{background:THEME.card, width:'36px', height:'36px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'14px', border:`1px solid ${THEME.cardBorder}`}}>{s}</span>)}
         </div>
 
-        <div style={{marginTop:'32px', display:'grid', gap:'28px'}}>
+        <div style={{marginTop:'32px', display:'grid', gap:'28px', gridTemplateColumns:'1fr 1fr'}}>
           <div>
             <p style={{color:THEME.muted, fontSize:'12px', letterSpacing:'2px'}}>FEATURES</p>
             <div style={{marginTop:'12px', display:'grid', gap:'10px', fontSize:'14px', color:'#D1CFE0'}}>
               <span>AI explainer video maker</span><span>AI music video generator</span><span>AI video generator</span><span>AI voiceover</span><span>AI avatar</span><span>Translator</span>
+            </div>
+          </div>
+          <div>
+            <p style={{color:THEME.muted, fontSize:'12px', letterSpacing:'2px'}}>PRICING</p>
+            <div style={{marginTop:'12px', display:'grid', gap:'10px', fontSize:'14px', color:'#D1CFE0'}}>
+              <Link href="/pricing" style={{color:THEME.accent, textDecoration:'none', fontWeight:700}}>Pricing • Rs 0 - Rs 15k</Link>
+              <Link href="/pricing" style={{color:'#D1CFE0', textDecoration:'none'}}>Free - 3 videos / month</Link>
+              <Link href="/pricing" style={{color:'#D1CFE0', textDecoration:'none'}}>Standard - Rs 8,000</Link>
+              <Link href="/pricing" style={{color:'#D1CFE0', textDecoration:'none'}}>Premium - Rs 15,000</Link>
             </div>
           </div>
         </div>
