@@ -35,25 +35,23 @@ export default function Dashboard() {
     setCreating(true);
     setTimeout(()=>{
       setCreating(false);
-      alert(`✅ LIVE! Video Creating:\n\nIdea: ${idea}\nVoice: ${voice}\nEngine: Canvas FREE - No Watermark\n\nPattern: Script → Photo → Clips (5 Raaz) → Final Video`);
-    }, 800);
+      // ✅ Idea leke script page pe jao
+      router.push(`/dashboard/script-to-video?idea=${encodeURIComponent(idea)}&voice=${encodeURIComponent(voice)}`);
+    }, 500);
   };
 
   const handleWorkflow = (w:any) => {
-    // Har workflow LIVE
+    // ✅ FIX - Script to video pe click = naya page khulega Fliki jaisa
     if(w.id === 'script'){
-      document.getElementById('idea-input')?.focus();
-      window.scrollTo({top:0, behavior:'smooth'});
-      alert(`🎬 ${w.title} ACTIVE - Uper idea box me script likho jan!`);
+      router.push('/dashboard/script-to-video');
+      return;
     } else {
-      alert(`🚀 ${w.title} - LIVE!\n\nEngine: Canvas FREE\nVoice: ${voice}\n\nAbhi Phase 1 me skeleton active hai. Phase 2 me full functional: ${w.title} → ${w.desc}`);
-      // Future: router.push(`/dashboard/${w.id}`)
+      alert(`🚀 ${w.title} - LIVE!\n\nEngine: Canvas FREE\nVoice: ${voice}\n\nPhase 2 me full functional: ${w.title} → ${w.desc}`);
     }
   };
 
   return (
     <div style={{background:"#0f0a1f", color:"#fff", minHeight:"100vh", fontFamily:"system-ui", paddingBottom:80}}>
-      {/* Top Bar */}
       <div style={{padding:"12px 16px", display:"flex", justifyContent:"space-between", alignItems:"center"}}>
         <div style={{width:32, height:32, background:"#ff006e", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer"}} onClick={()=>router.push('/')}>●</div>
         <div style={{background:"#ff006e", color:"#fff", padding:"6px 14px", borderRadius:20, fontSize:12, fontWeight:700, cursor:"pointer"}}>◆ Rg</div>
@@ -68,7 +66,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Input Box - LIVE */}
       <div style={{margin:"16px", background:"#1a1232", border:"1px solid #2a1e4e", borderRadius:16, padding:14}}>
         <textarea id="idea-input" value={idea} onChange={e=>setIdea(e.target.value)} placeholder="Enter your video idea, script, or blog link..." style={{width:"100%", height:70, background:"transparent", border:"none", color:"#fff", outline:"none", resize:"none", fontSize:14}}></textarea>
         <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:10}}>
@@ -79,7 +76,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Voice Selector - LIVE */}
       <div style={{margin:"0 16px"}}>
         <div style={{fontSize:11, color:"#888", letterSpacing:1, marginBottom:8}}>SELECT VOICE (3 LOCKED)</div>
         <div style={{position:"relative"}}>
@@ -97,12 +93,11 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Workflows Grid - SAB LIVE */}
       <div style={{margin:"20px 16px 0"}}>
         <div style={{fontSize:11, color:"#888", letterSpacing:1, marginBottom:12}}>VIDEO WORKFLOWS</div>
         <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:10}}>
           {WORKFLOWS.map(w=>(
-            <div key={w.id} onClick={()=>handleWorkflow(w)} style={{background:"#1a1232", border:"1px solid #2a1e4e", borderRadius:16, overflow:"hidden", cursor:"pointer", position:"relative", transition:"0.2s"}} onMouseEnter={e=>{e.currentTarget.style.borderColor="#ff006e55"}} onMouseLeave={e=>{e.currentTarget.style.borderColor="#2a1e4e"}}>
+            <div key={w.id} onClick={()=>handleWorkflow(w)} style={{background:"#1a1232", border:"1px solid #2a1e4e", borderRadius:16, overflow:"hidden", cursor:"pointer", position:"relative"}}>
               <div style={{height:140, background:`url(${w.img}) center/cover`, opacity:0.6}}></div>
               <div style={{position:"absolute", inset:0, background:"linear-gradient(180deg, transparent 30%, #1a1232 90%)"}}></div>
               <div style={{position:"absolute", bottom:0, left:0, right:0, padding:12}}>
@@ -114,7 +109,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Bottom Nav - LIVE */}
       <div style={{position:"fixed", bottom:0, left:0, right:0, background:"#0f0a1f", borderTop:"1px solid #1a1a2e", display:"flex", justifyContent:"space-around", padding:"8px 0", zIndex:20}}>
         {[
           {icon:"🏠", label:"Home", active:true},
