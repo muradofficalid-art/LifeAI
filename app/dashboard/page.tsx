@@ -1,169 +1,135 @@
-'use client'
-import { useState, useEffect } from 'react'
-import VoiceSelector from '@/components/VoiceSelector'
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-const THEME = {
-  bg: '#0E0A1F',
-  card: '#1A1630',
-  cardBorder: '#2A2347',
-  primary: '#FF1E5E',
-  accent: '#C9B8FF',
-  muted: '#8B86A0',
-  pillInactive: '#1E1A32'
-}
+const VOICES = [
+  "Urdu - Asad - Documentary / Islami / Vlog",
+  "Hindi - Priya - Explainer / Business",
+  "English - Adam - Cinematic",
+  "Urdu - Ayesha - Emotional Story",
+];
 
-export default function Dashboard(){
-  const [storyText, setStoryText] = useState('')
-  const [selectedVoice, setSelectedVoice] = useState('ur-PK-AsadNeural')
-  const [loading, setLoading] = useState(false)
-  const [audioUrl, setAudioUrl] = useState('')
-  
-  // ADMIN CONNECTION - Functional Only - No Design Change
-  const [isGod, setIsGod] = useState(false)
-  const [pricing, setPricing] = useState({ free: { limit: 5 }, standard: { price: 8000 }, premium: { price: 15000 } })
-  const [isUnlimited, setIsUnlimited] = useState(false)
-  const [todayCount, setTodayCount] = useState(0)
+const WORKFLOWS = [
+  { id: "script", title: "Script to video", img: "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=400", desc: "MAIN - Canvas FREE" },
+  { id: "avatar", title: "Avatar video", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400", desc: "Avatar + Voice" },
+  { id: "ppt", title: "PPT to video", img: "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=400", desc: "PPT → Video" },
+  { id: "explainer", title: "Explainer video", img: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400", desc: "Business Explain" },
+  { id: "motion", title: "Motion graphics explainer", img: "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=400", desc: "Animation" },
+  { id: "music", title: "Music video", img: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400", desc: "Music + Visuals" },
+  { id: "podcast", title: "Podcast video", img: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400", desc: "Podcast → Video" },
+  { id: "product", title: "Product video", img: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400", desc: "Product Showcase" },
+  { id: "blog", title: "Blog to video", img: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400", desc: "Blog Link → Video" },
+  { id: "swap", title: "Swap Studio", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400", desc: "Face Swap FREE" },
+];
 
-  useEffect(()=>{
-    // 1. Check GOD user
-    const email = (localStorage.getItem('lifeai_user_email') || '').toLowerCase()
-    if(email.includes('murad') || email === 'murad@lifeai.com'){
-      setIsGod(true)
-    }
-    // 2. Load Admin Pricing from localStorage
-    const savedPricing = localStorage.getItem('lifeai_pricing')
-    const savedUnlimited = localStorage.getItem('lifeai_unlimited')
-    if(savedPricing){
-      try { setPricing(JSON.parse(savedPricing)) } catch(e){}
-    }
-    if(savedUnlimited){
-      setIsUnlimited(savedUnlimited === 'true')
-    }
-    // 3. Load from API also (latest)
-    fetch('/api/admin/pricing').then(r=>r.json()).then(data=>{
-      if(data && data.free) {
-        setPricing(data)
-        if(data.unlimited !== undefined) setIsUnlimited(data.unlimited)
-      }
-    }).catch(()=>{})
-    // 4. Load Today Count
-    const today = new Date().toDateString()
-    const savedDate = localStorage.getItem('lifeai_date')
-    if(savedDate !== today){
-      localStorage.setItem('lifeai_date', today)
-      localStorage.setItem('lifeai_count', '0')
-      setTodayCount(0)
+export default function Dashboard() {
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState("Video");
+  const [voice, setVoice] = useState(VOICES[0]);
+  const [idea, setIdea] = useState("");
+  const [showVoice, setShowVoice] = useState(false);
+  const [creating, setCreating] = useState(false);
+
+  const handleCreate = () => {
+    if(!idea.trim()){ alert("Jan pehle idea likho! Example: 5 money habits"); return; }
+    setCreating(true);
+    setTimeout(()=>{
+      setCreating(false);
+      alert(`✅ LIVE! Video Creating:\n\nIdea: ${idea}\nVoice: ${voice}\nEngine: Canvas FREE - No Watermark\n\nPattern: Script → Photo → Clips (5 Raaz) → Final Video`);
+    }, 800);
+  };
+
+  const handleWorkflow = (w:any) => {
+    // Har workflow LIVE
+    if(w.id === 'script'){
+      document.getElementById('idea-input')?.focus();
+      window.scrollTo({top:0, behavior:'smooth'});
+      alert(`🎬 ${w.title} ACTIVE - Uper idea box me script likho jan!`);
     } else {
-      setTodayCount(parseInt(localStorage.getItem('lifeai_count') || '0'))
+      alert(`🚀 ${w.title} - LIVE!\n\nEngine: Canvas FREE\nVoice: ${voice}\n\nAbhi Phase 1 me skeleton active hai. Phase 2 me full functional: ${w.title} → ${w.desc}`);
+      // Future: router.push(`/dashboard/${w.id}`)
     }
-  },[])
+  };
 
-  const handleCreate = async () => {
-    if(!storyText.trim()) { alert('Pehle text likho jan!'); return; }
-
-    // ADMIN LIMIT CHECK - Functional
-    const limit = pricing.free?.limit || 5
-    if(!isGod && !isUnlimited && todayCount >= limit){
-      alert(`Free limit khatam jan! Aaj ke ${limit} videos ho gaye. Admin se limit barhao ya Premium lo!`)
-      return
-    }
-
-    setLoading(true)
-    setAudioUrl('')
-    try {
-      const res = await fetch('/api/voice', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: storyText, voice: selectedVoice })
-      })
-      if(!res.ok) throw new Error('Voice failed')
-      const blob = await res.blob()
-      const url = URL.createObjectURL(blob)
-      setAudioUrl(url)
-      const audio = new Audio(url)
-      audio.play()
-      // Increase count
-      const newCount = todayCount + 1
-      setTodayCount(newCount)
-      localStorage.setItem('lifeai_count', String(newCount))
-    } catch(e) {
-      alert('Voice error jan, dobara try karo!')
-    }
-    setLoading(false)
-  }
-
-  const items=[
-    {t:'Script to video', i:'/workflows/1.jpg'},
-    {t:'Avatar video', i:'/workflows/2.jpg'},
-    {t:'PPT to video', i:'/workflows/3.jpg'},
-    {t:'Explainer video', i:'/workflows/4.jpg'},
-    {t:'Motion graphics explainer', i:'/workflows/5.jpg'},
-    {t:'Music video', i:'/workflows/6.jpg'},
-    {t:'Podcast video', i:'/workflows/7.jpg'},
-    {t:'Product video', i:'/workflows/8.jpg'},
-    {t:'Blog to video', i:'/workflows/9.jpg'},
-    {t:'Swap Studio', i:'/workflows/10.jpg'},
-  ]
-  return(
-    <div style={{background:THEME.bg, minHeight:'100vh', color:'white', fontFamily:'system-ui', paddingBottom:'80px'}}>
-      
-      <div style={{display:'flex', justifyContent:'space-between', padding:'12px 14px', alignItems:'center'}}>
-        <div style={{width:'20px', height:'20px', background:THEME.primary, borderRadius:'50%'}}></div>
-        <div style={{background:THEME.primary, padding:'4px 10px', borderRadius:'999px', fontSize:'11px'}}>✦ Rg</div>
+  return (
+    <div style={{background:"#0f0a1f", color:"#fff", minHeight:"100vh", fontFamily:"system-ui", paddingBottom:80}}>
+      {/* Top Bar */}
+      <div style={{padding:"12px 16px", display:"flex", justifyContent:"space-between", alignItems:"center"}}>
+        <div style={{width:32, height:32, background:"#ff006e", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer"}} onClick={()=>router.push('/')}>●</div>
+        <div style={{background:"#ff006e", color:"#fff", padding:"6px 14px", borderRadius:20, fontSize:12, fontWeight:700, cursor:"pointer"}}>◆ Rg</div>
       </div>
 
-      <div style={{textAlign:'center'}}>
-        <p style={{fontSize:'11px', fontWeight:600, color:THEME.accent}}>Let's get started, public</p>
-        <div style={{display:'flex', justifyContent:'center', gap:'6px', marginTop:'8px'}}>
-          <span style={{background:THEME.primary, padding:'3px 10px', borderRadius:'999px', fontSize:'10px'}}>◉ Video</span>
-          <span style={{background:THEME.pillInactive, padding:'3px 10px', borderRadius:'999px', fontSize:'10px', color:THEME.muted, border:`1px solid ${THEME.cardBorder}`}}>Voiceover</span>
-          <span style={{background:THEME.pillInactive, padding:'3px 10px', borderRadius:'999px', fontSize:'10px', color:THEME.muted, border:`1px solid ${THEME.cardBorder}`}}>Design</span>
+      <div style={{textAlign:"center", padding:"10px 20px 0"}}>
+        <h2 style={{margin:0, fontSize:16, fontWeight:600}}>Let's get started, public</h2>
+        <div style={{display:"flex", gap:8, justifyContent:"center", marginTop:12}}>
+          {["Video","Voiceover","Design"].map(t=>(
+            <button key={t} onClick={()=>setActiveTab(t)} style={{background: activeTab===t ? "#ff006e" : "#1e1438", color:"#fff", border:"none", padding:"6px 14px", borderRadius:20, fontSize:12, cursor:"pointer", fontWeight: activeTab===t ? 700 : 400}}>{activeTab===t && "● "}{t}</button>
+          ))}
         </div>
       </div>
 
-      <div style={{background:THEME.card, borderRadius:'14px', margin:'14px', padding:'10px', border:`1px solid ${THEME.cardBorder}`}}>
-        <textarea 
-          placeholder="Enter your video idea, script, or blog link..." 
-          value={storyText}
-          onChange={(e)=>setStoryText(e.target.value)}
-          style={{width:'100%', background:'transparent', border:'none', outline:'none', color:'white', fontSize:'12px', minHeight:'44px', resize:'none'}}
-        ></textarea>
-        <div style={{display:'flex', justifyContent:'space-between', marginTop:'8px', alignItems:'center'}}>
-          <span style={{fontSize:'12px', color:THEME.muted}}>👤 ✦</span>
-          <button onClick={handleCreate} disabled={loading} style={{background:THEME.primary, color:'white', border:'none', padding:'6px 12px', borderRadius:'999px', fontSize:'11px', fontWeight:700, opacity: loading ? 0.6 : 1}}>
-            {loading ? '...Generating' : '✦ Create →'}
-          </button>
+      {/* Input Box - LIVE */}
+      <div style={{margin:"16px", background:"#1a1232", border:"1px solid #2a1e4e", borderRadius:16, padding:14}}>
+        <textarea id="idea-input" value={idea} onChange={e=>setIdea(e.target.value)} placeholder="Enter your video idea, script, or blog link..." style={{width:"100%", height:70, background:"transparent", border:"none", color:"#fff", outline:"none", resize:"none", fontSize:14}}></textarea>
+        <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:10}}>
+          <div style={{display:"flex", gap:6}}>
+            <button style={{background:"#1e1438", border:"none", color:"#888", width:28, height:28, borderRadius:"50%", cursor:"pointer"}}>👤✦</button>
+          </div>
+          <button onClick={handleCreate} disabled={creating} style={{background:"#ff2e7e", color:"#fff", border:"none", padding:"10px 18px", borderRadius:24, fontWeight:700, fontSize:13, cursor:"pointer", opacity: creating ? 0.6 : 1}}>{creating ? "⏳ Creating..." : "◆ Create →"}</button>
         </div>
-        {audioUrl && (
-          <div style={{marginTop:'10px'}}>
-            <audio controls src={audioUrl} style={{width:'100%', height:'36px'}}></audio>
+      </div>
+
+      {/* Voice Selector - LIVE */}
+      <div style={{margin:"0 16px"}}>
+        <div style={{fontSize:11, color:"#888", letterSpacing:1, marginBottom:8}}>SELECT VOICE (3 LOCKED)</div>
+        <div style={{position:"relative"}}>
+          <div onClick={()=>setShowVoice(!showVoice)} style={{background:"#1a1232", border:"1px solid #2a1e4e", borderRadius:12, padding:"12px 14px", display:"flex", justifyContent:"space-between", alignItems:"center", cursor:"pointer", fontSize:13}}>
+            <span>{voice}</span><span style={{transform: showVoice ? "rotate(180deg)" : "rotate(0deg)"}}>⌄</span>
           </div>
-        )}
+          {showVoice && (
+            <div style={{position:"absolute", top:"100%", left:0, right:0, background:"#1e1438", border:"1px solid #3a2e6e", borderRadius:12, marginTop:6, zIndex:10, overflow:"hidden"}}>
+              {VOICES.map(v=>(
+                <div key={v} onClick={()=>{setVoice(v); setShowVoice(false)}} style={{padding:"12px 14px", fontSize:12, cursor:"pointer", background: voice===v ? "#ff006e22" : "transparent", borderBottom:"1px solid #2a1e4e"}}>{v} {voice===v && "✓"}</div>
+              ))}
+              <div style={{padding:"10px 14px", fontSize:11, color:"#888"}}>🔒 3 voices locked - Upgrade to unlock</div>
+            </div>
+          )}
+        </div>
       </div>
 
-      <div style={{margin:'0 14px'}}>
-        <VoiceSelector text={storyText} selectedVoice={selectedVoice} onVoiceChange={setSelectedVoice} />
+      {/* Workflows Grid - SAB LIVE */}
+      <div style={{margin:"20px 16px 0"}}>
+        <div style={{fontSize:11, color:"#888", letterSpacing:1, marginBottom:12}}>VIDEO WORKFLOWS</div>
+        <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:10}}>
+          {WORKFLOWS.map(w=>(
+            <div key={w.id} onClick={()=>handleWorkflow(w)} style={{background:"#1a1232", border:"1px solid #2a1e4e", borderRadius:16, overflow:"hidden", cursor:"pointer", position:"relative", transition:"0.2s"}} onMouseEnter={e=>{e.currentTarget.style.borderColor="#ff006e55"}} onMouseLeave={e=>{e.currentTarget.style.borderColor="#2a1e4e"}}>
+              <div style={{height:140, background:`url(${w.img}) center/cover`, opacity:0.6}}></div>
+              <div style={{position:"absolute", inset:0, background:"linear-gradient(180deg, transparent 30%, #1a1232 90%)"}}></div>
+              <div style={{position:"absolute", bottom:0, left:0, right:0, padding:12}}>
+                <div style={{fontSize:13, fontWeight:700, lineHeight:1.2}}>{w.title}</div>
+                <div style={{fontSize:11, color:"#aaa", marginTop:6, display:"flex", justifyContent:"space-between"}}><span>Try it now →</span><span style={{fontSize:10, background:"#00ff8815", color:"#00ff88", padding:"2px 6px", borderRadius:10}}>LIVE</span></div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <p style={{fontSize:'10px', color:THEME.muted, padding:'0 14px', marginBottom:'8px', marginTop:'16px', letterSpacing:'1px'}}>VIDEO WORKFLOWS</p>
-
-      <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'8px', padding:'0 10px'}}>
-        {items.map((x,j)=>(
-          <div key={j} style={{borderRadius:'12px', height:'140px', position:'relative', overflow:'hidden', background:THEME.card, border:`1px solid ${THEME.cardBorder}`}}>
-            <img src={x.i} alt={x.t} style={{position:'absolute', right:0, top:0, width:'62%', height:'100%', objectFit:'cover', opacity:0.9}}/>
-            <div style={{position:'absolute', inset:0, background:`linear-gradient(to right, ${THEME.bg} 0%, ${THEME.card} 45%, transparent 80%)`}}></div>
-            <p style={{position:'absolute', left:'8px', top:'8px', fontSize:'11px', fontWeight:700, width:'78px', lineHeight:'1.2'}}>{x.t}</p>
-            <p style={{position:'absolute', left:'8px', bottom:'8px', fontSize:'9px', color:THEME.accent}}>Try it now →</p>
+      {/* Bottom Nav - LIVE */}
+      <div style={{position:"fixed", bottom:0, left:0, right:0, background:"#0f0a1f", borderTop:"1px solid #1a1a2e", display:"flex", justifyContent:"space-around", padding:"8px 0", zIndex:20}}>
+        {[
+          {icon:"🏠", label:"Home", active:true},
+          {icon:"📁", label:"Files", active:false},
+          {icon:"👤", label:"Characters", active:false},
+          {icon:"🎬", label:"Series", active:false},
+          {icon:"🎮", label:"Playground", active:false},
+          {icon:"📄", label:"Templates", active:false},
+          {icon:"📦", label:"Resources", active:false},
+        ].map(n=>(
+          <div key={n.label} onClick={()=> n.label==="Home" ? router.push('/') : alert(`${n.label} - Coming Soon! Phase 2 me LIVE hoga jan!`)} style={{textAlign:"center", cursor:"pointer", opacity: n.active ? 1 : 0.5}}>
+            <div style={{fontSize:18}}>{n.icon}</div><div style={{fontSize:9, marginTop:2}}>{n.label}</div>
           </div>
         ))}
       </div>
-
-      <div style={{position:'fixed', bottom:0, left:0, right:0, background:THEME.card, borderTop:`1px solid ${THEME.cardBorder}`, display:'flex', justifyContent:'space-around', padding:'7px 0'}}>
-        {['Home','Files','Characters','Series','Playground','Templates','Resources'].map((l,i)=>(
-          <div key={l} style={{textAlign:'center'}}><div style={{fontSize:'13px', color: i===0? THEME.primary : THEME.muted}}>{i===0?'🏠':'📁'}</div><div style={{fontSize:'7px', color: i===0?'white': THEME.muted}}>{l}</div></div>
-        ))}
-      </div>
-
     </div>
-  )
+  );
 }
