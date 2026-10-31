@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const FEATURES = [
   { id: "explainer", icon: "🎬", title: "AI Explainer Video Maker", desc: "Script se explain video - Business ke liye", color: "#ff006e" },
@@ -11,29 +12,43 @@ const FEATURES = [
 ];
 
 export default function LandingPage() {
+  const router = useRouter();
   const [activePage, setActivePage] = useState<string | null>(null);
   const [showAuth, setShowAuth] = useState(false);
   const [authMode, setAuthMode] = useState<"login"|"signup">("signup");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Handle Generate Click - Login check ke sath
+  // Handle Generate Click - Purana Dashboard pe jayega
   const handleGenerateClick = () => {
     if(!isLoggedIn){
       setAuthMode("signup");
       setShowAuth(true);
     } else {
-      setActivePage('video');
+      router.push('/dashboard');
+    }
+  };
+
+  const handleFeatureClick = (f:any) => {
+    if(f.side) return;
+    if(f.id === 'video'){
+      handleGenerateClick();
+      return;
+    }
+    if(!isLoggedIn){
+      setAuthMode("signup");
+      setShowAuth(true);
+    } else {
+      setActivePage(f.id);
     }
   };
 
   if (activePage) {
     const feature = FEATURES.find(f => f.id === activePage);
-    return <FeaturePage feature={feature} activeId={activePage} onBack={() => setActivePage(null)} onGenerate={handleGenerateClick} />;
+    return <FeaturePage feature={feature} activeId={activePage} onBack={() => setActivePage(null)} />;
   }
 
   return (
     <div style={{background:"#050510", color:"#fff", minHeight:"100vh", fontFamily:"system-ui"}}>
-      {/* Header - FIXED + Login/Signup Wapas */}
       <header style={{padding:"14px 20px", display:"flex", justifyContent:"space-between", borderBottom:"1px solid #1a1a2e", position:"sticky", top:0, background:"rgba(5,5,16,0.9)", backdropFilter:"blur(10px)", zIndex:20}}>
         <div style={{display:"flex", alignItems:"center", gap:8}}><div style={{width:10,height:10,background:"#ff006e",borderRadius:"50%"}}></div><b>Life-AI</b></div>
         <div style={{display:"flex", gap:8, alignItems:"center"}}>
@@ -44,12 +59,11 @@ export default function LandingPage() {
               <button onClick={()=>{setAuthMode("signup"); setShowAuth(true)}} style={{background:"#ff006e", color:"#fff", border:"none", padding:"8px 16px", borderRadius:20, cursor:"pointer", fontWeight:600, fontSize:13}}>Get started →</button>
             </>
           ) : (
-            <button onClick={()=>setActivePage('video')} style={{background:"#00ff88", color:"#000", border:"none", padding:"8px 16px", borderRadius:20, cursor:"pointer", fontWeight:700, fontSize:13}}>Dashboard →</button>
+            <button onClick={()=>router.push('/dashboard')} style={{background:"#00ff88", color:"#000", border:"none", padding:"8px 16px", borderRadius:20, cursor:"pointer", fontWeight:700, fontSize:13}}>Dashboard →</button>
           )}
         </div>
       </header>
 
-      {/* Hero */}
       <div style={{textAlign:"center", padding:"60px 20px 20px"}}>
         <div style={{fontSize:12, color:"#888", background:"#1a1a2e", display:"inline-block", padding:"4px 12px", borderRadius:20}}>• AI Video Generator • Cinematic 8K</div>
         <h1 style={{fontSize:36, margin:"20px 0", lineHeight:1.2}}>Turn idea into videos<br/><span style={{color:"#a78bfa"}}>with AI voices</span></h1>
@@ -66,12 +80,11 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Features */}
       <div style={{padding:20, maxWidth:1000, margin:"40px auto 0"}}>
         <h3 style={{fontSize:12, letterSpacing:2, color:"#888"}}>FEATURES - REAL CLICK</h3>
         <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:12, marginTop:16}}>
           {FEATURES.map(f=>(
-            <div key={f.id} onClick={()=>!f.side && (isLoggedIn ? setActivePage(f.id) : handleGenerateClick())} 
+            <div key={f.id} onClick={()=>handleFeatureClick(f)} 
               style={{background:f.side ? "#0a0a0a" : "#111122", border:`1px solid ${f.side ? "#222" : f.color}33`, borderRadius:16, padding:18, cursor: f.side ? "not-allowed" : "pointer", opacity: f.side ? 0.5 : 1}}>
               <div style={{display:"flex", justifyContent:"space-between", alignItems:"start"}}>
                 <div style={{fontSize:28}}>{f.icon}</div>
@@ -86,12 +99,11 @@ export default function LandingPage() {
 
       <div style={{padding:20, maxWidth:1000, margin:"20px auto"}}>
         <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:20, fontSize:12, color:"#888", borderTop:"1px solid #1a1a2e", paddingTop:20}}>
-          <div><b style={{color:"#fff", fontSize:11}}>FEATURES</b><br/><br/>{FEATURES.map(f=> <div key={f.id} style={{marginBottom:6}}>{f.title} →</div>)}</div>
+          <div><b style={{color:"#fff", fontSize:11}}>FEATURES</b><br/><br/>{FEATURES.map(f=> <div key={f.id} onClick={()=>handleFeatureClick(f)} style={{marginBottom:6, cursor:"pointer"}}>{f.title} →</div>)}</div>
           <div><b style={{color:"#fff", fontSize:11}}>PRICING</b><br/><br/><div style={{cursor:"pointer"}} onClick={()=>setActivePage('pricing')}>Pricing - Rs 0 - Rs 15k →<br/>Free - 3 videos / month<br/>Standard - Rs 8,000<br/>Premium - Rs 15,000</div></div>
         </div>
       </div>
 
-      {/* LOGIN / SIGNUP MODAL - Ye Gaib tha jan, ab aa gaya! */}
       {showAuth && (
         <div style={{position:"fixed", inset:0, background:"rgba(0,0,0,0.8)", backdropFilter:"blur(8px)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:100, padding:20}}>
           <div style={{background:"linear-gradient(180deg, #151528, #0a0a18)", border:"1px solid #2a2a4e", borderRadius:20, padding:24, width:"100%", maxWidth:380, boxShadow:"0 20px 80px rgba(0,0,0,0.8)"}}>
@@ -111,17 +123,12 @@ export default function LandingPage() {
             <button onClick={()=>{
               setIsLoggedIn(true);
               setShowAuth(false);
-              setActivePage('video');
+              router.push('/dashboard');
             }} style={{width:"100%", background:"#ff006e", color:"#fff", border:"none", padding:"14px", borderRadius:12, fontWeight:700, cursor:"pointer", fontSize:14}}>
               {authMode==="login" ? "Login →" : "Create Free Account →"}
             </button>
             
             <p style={{fontSize:11, color:"#666", textAlign:"center", marginTop:12}}>FREE - 3 videos / month • No credit card • Canvas FREE Engine</p>
-            
-            <div style={{textAlign:"center", marginTop:12, fontSize:12, color:"#888"}}>
-              {authMode==="login" ? "No account? " : "Already have? "}
-              <span onClick={()=>setAuthMode(authMode==="login"?"signup":"login")} style={{color:"#ff006e", cursor:"pointer", fontWeight:600}}>{authMode==="login" ? "Sign Up" : "Login"}</span>
-            </div>
           </div>
         </div>
       )}
@@ -129,10 +136,8 @@ export default function LandingPage() {
   );
 }
 
-function FeaturePage({feature, activeId, onBack, onGenerate}:any){
+function FeaturePage({feature, activeId, onBack}:any){
   const isPricing = activeId === 'pricing' || !feature;
-  const isMain = feature?.id === 'video';
-
   if(isPricing){
     return (
       <div style={{background:"#050510", color:"#fff", minHeight:"100vh"}}>
@@ -141,14 +146,14 @@ function FeaturePage({feature, activeId, onBack, onGenerate}:any){
       </div>
     );
   }
-
   return (
     <div style={{background:"radial-gradient(1000px at 30% -10%, #1a0b2e 0%, #050510 55%)", color:"#fff", minHeight:"100vh"}}>
       <header style={{padding:"14px 20px", borderBottom:"1px solid #1a1a2e", display:"flex", justifyContent:"space-between", alignItems:"center"}}><button onClick={onBack} style={{background:"#1a1a2e", color:"#fff", border:"1px solid #2a2a4e", padding:"8px 14px", borderRadius:10, cursor:"pointer"}}>← Back</button><span style={{fontSize:11, color:"#00ff88"}}>● FREE ENGINE</span></header>
       <div style={{maxWidth:900, margin:"0 auto", padding:"28px 20px"}}>
         <div style={{display:"flex", gap:16, alignItems:"start"}}><div style={{width:58, height:58, background:`${feature.color}25`, border:`1px solid ${feature.color}40`, borderRadius:16, display:"flex", alignItems:"center", justifyContent:"center", fontSize:28}}>{feature.icon}</div><div><h1 style={{margin:0, fontSize:24}}>{feature.title}</h1><p style={{color:"#888", fontSize:14}}>{feature.desc}</p></div></div>
         <div style={{background:"#111122", border:"1px solid #1e1e3a", borderRadius:20, padding:22, marginTop:22}}>
-          {isMain ? (<><textarea placeholder="Yahan kahani likho jan..." style={{width:"100%", height:120, background:"#050510", border:"1px solid #2a2a4e", color:"#fff", borderRadius:12, padding:14}}></textarea><button style={{width:"100%", background:"#00ff88", color:"#000", border:"none", padding:"16px", borderRadius:12, fontWeight:800, marginTop:14, cursor:"pointer"}}>🚀 Generate Video - FREE</button></>) : (<><p>PRO Workspace - {feature.title}</p><button style={{width:"100%", background:feature.color, color:"#fff", border:"none", padding:"14px", borderRadius:12, cursor:"pointer"}}>Start {feature.title} →</button></>)}
+          <p>PRO Workspace - {feature.title}</p>
+          <button style={{width:"100%", background:feature.color, color:"#fff", border:"none", padding:"14px", borderRadius:12, cursor:"pointer", fontWeight:700}}>Start {feature.title} →</button>
         </div>
       </div>
     </div>
