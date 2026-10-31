@@ -4,41 +4,35 @@ export async function POST(req: Request) {
   try {
     const { text, voice } = await req.json();
     
-    const allowed = ["ur-PK-AsadNeural", "hi-IN-SwaraNeural", "en-US-GuyNeural"];
-    const finalVoice = allowed.includes(voice) ? voice : "ur-PK-AsadNeural";
+    if (!text) return new Response("No text", { status: 400 });
 
-    if (!text) {
-      return new Response(JSON.stringify({ error: "Text empty" }), { status: 400 });
-    }
+    // Map our 3 locked voices to Google language
+    let lang = "ur";
+    if (voice?.includes("hi-IN")) lang = "hi";
+    if (voice?.includes("en-US")) lang = "en";
 
-    // SSML for Edge TTS
-    const ssml = `<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='en-US'><voice name='${finalVoice}'>${text}</voice></speak>`;
+    // Google FREE TTS - Unlimited - Works on Vercel
+    const googleUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${lang}&q=${encodeURIComponent(text)}&client=tw-ob&ttsspeed=1`;
 
-    // Direct Edge TTS - No package needed
-    const response = await fetch(
-      "https://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=6A5AA1D4EAFF4E9FB37E23D68491D6F4",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/ssml+xml",
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-        },
-        body: ssml,
-      }
-    );
-
-    if (!response.ok || !response.body) {
-      // Fallback - return text so app doesn't crash
-      return new Response(JSON.stringify({ success: true, voice: finalVoice, text }), {
-        headers: { "Content-Type": "application/json" },
-      });
-    }
-
-    return new Response(response.body, {
-      headers: { "Content-Type": "audio/mpeg" },
+    const audioRes = await fetch(googleUrl, {
+      headers: {
+        "User-Agent": "Mozilla/5.0",
+        "Referer": "https://translate.google.com/",
+      },
     });
 
-  } catch (err: any) {
-    return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+    if (!audioRes.ok || !audioRes.body) {
+      return new Response(JSON.stringify({ error: "Google TTS failed" }), { status: 500 });
+    }
+
+    return new Response(audioRes.body, {
+      headers: {
+        "Content-Type": "audio/mpeg",
+        "Cache-Control": "no-cache",
+      },
+    });
+
+  } catch (e: any) {
+    return new Response(JSON.stringify({ error: e.message }), { status: 500 });
   }
 }
