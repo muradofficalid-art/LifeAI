@@ -18,7 +18,6 @@ export default function LandingPage() {
   const [authMode, setAuthMode] = useState<"login"|"signup">("signup");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Handle Generate Click - Purana Dashboard pe jayega
   const handleGenerateClick = () => {
     if(!isLoggedIn){
       setAuthMode("signup");
@@ -52,7 +51,8 @@ export default function LandingPage() {
       <header style={{padding:"14px 20px", display:"flex", justifyContent:"space-between", borderBottom:"1px solid #1a1a2e", position:"sticky", top:0, background:"rgba(5,5,16,0.9)", backdropFilter:"blur(10px)", zIndex:20}}>
         <div style={{display:"flex", alignItems:"center", gap:8}}><div style={{width:10,height:10,background:"#ff006e",borderRadius:"50%"}}></div><b>Life-AI</b></div>
         <div style={{display:"flex", gap:8, alignItems:"center"}}>
-          <button onClick={()=>setActivePage('pricing')} style={{background:"transparent", color:"#aaa", border:"none", padding:"6px 10px", borderRadius:20, cursor:"pointer", fontSize:13}}>Pricing</button>
+          {/* ✅ EDIT 1 - Pricing ab alag page pe jayega */}
+          <button onClick={()=>router.push('/pricing')} style={{background:"transparent", color:"#aaa", border:"none", padding:"6px 10px", borderRadius:20, cursor:"pointer", fontSize:13}}>Pricing</button>
           {!isLoggedIn ? (
             <>
               <button onClick={()=>{setAuthMode("login"); setShowAuth(true)}} style={{background:"transparent", color:"#fff", border:"1px solid #333", padding:"7px 14px", borderRadius:20, cursor:"pointer", fontSize:13}}>Login</button>
@@ -76,7 +76,8 @@ export default function LandingPage() {
         
         <div style={{display:"flex", gap:10, justifyContent:"center", marginTop:16}}>
           <button onClick={handleGenerateClick} style={{background:"#ff006e", color:"#fff", border:"none", padding:"12px 22px", borderRadius:24, cursor:"pointer", fontWeight:700}}>Get started for free →</button>
-          <button onClick={()=>setActivePage('pricing')} style={{background:"#1a1a2e", color:"#fff", border:"1px solid #333", padding:"12px 22px", borderRadius:24, cursor:"pointer"}}>View pricing • Rs 8k</button>
+          {/* ✅ EDIT 2 - View pricing bhi alag page */}
+          <button onClick={()=>router.push('/pricing')} style={{background:"#1a1a2e", color:"#fff", border:"1px solid #333", padding:"12px 22px", borderRadius:24, cursor:"pointer"}}>View pricing • Rs 8k</button>
         </div>
       </div>
 
@@ -100,7 +101,8 @@ export default function LandingPage() {
       <div style={{padding:20, maxWidth:1000, margin:"20px auto"}}>
         <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:20, fontSize:12, color:"#888", borderTop:"1px solid #1a1a2e", paddingTop:20}}>
           <div><b style={{color:"#fff", fontSize:11}}>FEATURES</b><br/><br/>{FEATURES.map(f=> <div key={f.id} onClick={()=>handleFeatureClick(f)} style={{marginBottom:6, cursor:"pointer"}}>{f.title} →</div>)}</div>
-          <div><b style={{color:"#fff", fontSize:11}}>PRICING</b><br/><br/><div style={{cursor:"pointer"}} onClick={()=>setActivePage('pricing')}>Pricing - Rs 0 - Rs 15k →<br/>Free - 3 videos / month<br/>Standard - Rs 8,000<br/>Premium - Rs 15,000</div></div>
+          {/* ✅ EDIT 3 - Footer Pricing bhi alag page */}
+          <div><b style={{color:"#fff", fontSize:11}}>PRICING</b><br/><br/><div style={{cursor:"pointer"}} onClick={()=>router.push('/pricing')}>Pricing - Rs 0 - Rs 15k →<br/>Free - 3 videos / month<br/>Standard - Rs 8,000<br/>Premium - Rs 15,000</div></div>
         </div>
       </div>
 
@@ -111,23 +113,13 @@ export default function LandingPage() {
               <h2 style={{margin:0, fontSize:20}}>{authMode==="login" ? "Welcome Back! 👋" : "Create Account 🚀"}</h2>
               <button onClick={()=>setShowAuth(false)} style={{background:"#1a1a2e", border:"none", color:"#888", width:30, height:30, borderRadius:"50%", cursor:"pointer"}}>✕</button>
             </div>
-            
             <div style={{display:"flex", gap:8, marginBottom:20, background:"#050510", borderRadius:10, padding:4}}>
               <button onClick={()=>setAuthMode("signup")} style={{flex:1, background: authMode==="signup" ? "#ff006e" : "transparent", color:"#fff", border:"none", padding:"8px", borderRadius:8, cursor:"pointer", fontSize:13, fontWeight:600}}>Sign Up</button>
               <button onClick={()=>setAuthMode("login")} style={{flex:1, background: authMode==="login" ? "#222" : "transparent", color:"#fff", border:"none", padding:"8px", borderRadius:8, cursor:"pointer", fontSize:13}}>Login</button>
             </div>
-
             <input placeholder="Email - test@life-ai.pk" style={{width:"100%", background:"#050510", border:"1px solid #2a2a4e", color:"#fff", padding:"12px", borderRadius:10, marginBottom:10, outline:"none", boxSizing:"border-box"}}/>
             <input placeholder="Password" type="password" style={{width:"100%", background:"#050510", border:"1px solid #2a2a4e", color:"#fff", padding:"12px", borderRadius:10, marginBottom:14, outline:"none", boxSizing:"border-box"}}/>
-            
-            <button onClick={()=>{
-              setIsLoggedIn(true);
-              setShowAuth(false);
-              router.push('/dashboard');
-            }} style={{width:"100%", background:"#ff006e", color:"#fff", border:"none", padding:"14px", borderRadius:12, fontWeight:700, cursor:"pointer", fontSize:14}}>
-              {authMode==="login" ? "Login →" : "Create Free Account →"}
-            </button>
-            
+            <button onClick={()=>{setIsLoggedIn(true); setShowAuth(false); router.push('/dashboard');}} style={{width:"100%", background:"#ff006e", color:"#fff", border:"none", padding:"14px", borderRadius:12, fontWeight:700, cursor:"pointer", fontSize:14}}>{authMode==="login" ? "Login →" : "Create Free Account →"}</button>
             <p style={{fontSize:11, color:"#666", textAlign:"center", marginTop:12}}>FREE - 3 videos / month • No credit card • Canvas FREE Engine</p>
           </div>
         </div>
@@ -137,15 +129,6 @@ export default function LandingPage() {
 }
 
 function FeaturePage({feature, activeId, onBack}:any){
-  const isPricing = activeId === 'pricing' || !feature;
-  if(isPricing){
-    return (
-      <div style={{background:"#050510", color:"#fff", minHeight:"100vh"}}>
-        <header style={{padding:"14px 20px", borderBottom:"1px solid #1a1a2e", display:"flex", justifyContent:"space-between", alignItems:"center"}}><button onClick={onBack} style={{background:"#1a1a2e", color:"#fff", border:"1px solid #2a2a4e", padding:"8px 14px", borderRadius:10, cursor:"pointer"}}>← Back</button><span style={{fontSize:12, color:"#00ff88"}}>● LIVE</span></header>
-        <div style={{maxWidth:900, margin:"0 auto", padding:"30px 20px"}}><h1>💰 Pricing</h1><div style={{display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))", gap:14, marginTop:20}}><div style={{background:"#111122", border:"1px solid #222", borderRadius:16, padding:20}}>Free - Rs 0 - 3 videos</div><div style={{background:"#111122", border:"1px solid #ff006e", borderRadius:16, padding:20}}>Standard - Rs 8,000 - 100 videos</div><div style={{background:"#111122", border:"1px solid #8338ec44", borderRadius:16, padding:20}}>Premium - Rs 15,000 - Unlimited</div></div></div>
-      </div>
-    );
-  }
   return (
     <div style={{background:"radial-gradient(1000px at 30% -10%, #1a0b2e 0%, #050510 55%)", color:"#fff", minHeight:"100vh"}}>
       <header style={{padding:"14px 20px", borderBottom:"1px solid #1a1a2e", display:"flex", justifyContent:"space-between", alignItems:"center"}}><button onClick={onBack} style={{background:"#1a1a2e", color:"#fff", border:"1px solid #2a2a4e", padding:"8px 14px", borderRadius:10, cursor:"pointer"}}>← Back</button><span style={{fontSize:11, color:"#00ff88"}}>● FREE ENGINE</span></header>
