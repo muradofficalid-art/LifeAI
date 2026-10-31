@@ -1,127 +1,142 @@
-'use client'
-import Link from 'next/link'
+"use client";
+import { useState } from "react";
 
-const THEME = {
-  bg: '#0E0A1F',
-  bg2: '#130E28',
-  card: '#1A1630',
-  cardBorder: '#2A2347',
-  primary: '#FF1E5E',
-  accent: '#C9B8FF',
-  muted: '#8B86A0',
-  white: '#FFFFFF'
-}
+const FEATURES = [
+  { id: "explainer", icon: "🎬", title: "AI Explainer Video Maker", desc: "Script se explain video - Business ke liye", color: "#ff006e" },
+  { id: "music", icon: "🎵", title: "AI Music Video Generator", desc: "Music + visuals - Auto sync FREE", color: "#8338ec" },
+  { id: "video", icon: "🎥", title: "AI Video Generator", desc: "MAIN - Script to Video - Phase 2 Target", color: "#00ff88" },
+  { id: "voice", icon: "🎙️", title: "AI Voiceover", desc: "SIDE PE - Edge TTS FREE - Filhal Band", color: "#ffbe0b", side: true },
+  { id: "avatar", icon: "🧑‍🎤", title: "AI Avatar", desc: "Avatar se video - Canvas FREE", color: "#3a86ff" },
+  { id: "translator", icon: "🌐", title: "Translator", desc: "Urdu/Hindi/English FREE translate", color: "#fb5607" },
+];
 
-export default function Home(){
-  return(
-    <>
-    <style>{`
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
-      *{font-family:'Inter',sans-serif; box-sizing:border-box}
-    `}</style>
-    <div style={{background:THEME.bg, minHeight:'100vh', overflowX:'hidden'}}>
+export default function LandingPage() {
+  const [activePage, setActivePage] = useState<string | null>(null);
 
-      {/* NAV - Dark Glass Pill - PRICING ADDED */}
-      <div style={{position:'sticky', top:'12px', zIndex:50, padding:'0 12px'}}>
-        <nav style={{background:'rgba(26,22,48,0.85)', backdropFilter:'blur(12px)', height:'56px', borderRadius:'999px', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 14px 0 16px', boxShadow:'0 8px 32px rgba(0,0,0,0.4)', border:`1px solid ${THEME.cardBorder}`, maxWidth:'1120px', margin:'0 auto'}}>
-          <div style={{fontWeight:900, fontSize:'20px', color:'white', display:'flex', alignItems:'center', gap:'8px'}}>
-            <span style={{background:THEME.primary, width:'28px', height:'28px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'14px'}}>•</span>
-            Life-AI
-          </div>
-          <div style={{display:'flex', alignItems:'center', gap:'16px'}}>
-            <Link href="/pricing" style={{color:THEME.muted, fontSize:'13px', fontWeight:600, textDecoration:'none'}}>Pricing</Link>
-            <Link href="/signup" style={{background:THEME.primary, color:'white', padding:'8px 16px', borderRadius:'999px', fontSize:'13px', fontWeight:700, textDecoration:'none', boxShadow:`0 0 20px ${THEME.primary}40`}}>Get started →</Link>
-          </div>
-        </nav>
-      </div>
+  // REAL PAGE RENDER
+  if (activePage) {
+    const feature = FEATURES.find(f => f.id === activePage);
+    return <FeaturePage feature={feature} onBack={() => setActivePage(null)} />;
+  }
 
-      {/* HERO - Cinematic - 2 BUTTONS ADDED */}
-      <div style={{textAlign:'center', padding:'48px 16px 20px', maxWidth:'720px', margin:'0 auto'}}>
-        <span style={{background:THEME.card, color:THEME.accent, fontSize:'11px', padding:'6px 14px', borderRadius:'999px', border:`1px solid ${THEME.cardBorder}`}}>• AI Video Generator • Cinematic 8K</span>
-        <h1 style={{fontSize:'38px', fontWeight:900, lineHeight:'1.05', letterSpacing:'-1.5px', color:'white', marginTop:'18px'}}>Turn idea into videos<br/><span style={{color:THEME.accent}}>with AI voices</span></h1>
-        <p style={{fontSize:'14px', color:THEME.muted, marginTop:'14px'}}>Transform your ideas into stunning videos with AI video generator.</p>
+  // LANDING PAGE
+  return (
+    <div style={{background:"#050510", color:"#fff", minHeight:"100vh", fontFamily:"system-ui"}}>
+      {/* Header */}
+      <header style={{padding:"16px 20px", display:"flex", justifyContent:"space-between", borderBottom:"1px solid #1a1a2e"}}>
+        <div style={{display:"flex", alignItems:"center", gap:8}}><div style={{width:10,height:10,background:"#ff006e",borderRadius:"50%"}}></div><b>Life-AI</b></div>
+        <div style={{display:"flex", gap:10}}>
+          <button style={{background:"none", color:"#888", border:"none"}}>Pricing</button>
+          <button onClick={()=>setActivePage('video')} style={{background:"#ff006e", color:"#fff", border:"none", padding:"8px 16px", borderRadius:20, cursor:"pointer"}}>Get started →</button>
+        </div>
+      </header>
+
+      {/* Hero */}
+      <div style={{textAlign:"center", padding:"60px 20px 20px"}}>
+        <div style={{fontSize:12, color:"#888", background:"#1a1a2e", display:"inline-block", padding:"4px 12px", borderRadius:20}}>• AI Video Generator • Cinematic 8K</div>
+        <h1 style={{fontSize:36, margin:"20px 0", lineHeight:1.2}}>Turn idea into videos<br/><span style={{color:"#a78bfa"}}>with AI voices</span></h1>
+        <p style={{color:"#888", fontSize:14}}>Transform your ideas into stunning videos with AI video generator.</p>
         
-        <div style={{background:THEME.card, borderRadius:'20px', padding:'14px', marginTop:'28px', boxShadow:`0 10px 40px rgba(0,0,0,0.5)`, border:`1px solid ${THEME.cardBorder}`, textAlign:'left'}}>
-          <div style={{fontSize:'13px', color:THEME.muted}}>Create a faceless TikTok video about "5 money habits..."</div>
-          <div style={{display:'flex', justifyContent:'space-between', marginTop:'16px', alignItems:'center'}}>
-            <span style={{fontSize:'12px', fontWeight:600, color:THEME.accent}}>🔊 Voice ▾</span>
-            <Link href="/signup" style={{background:THEME.primary, color:'white', padding:'9px 16px', borderRadius:'999px', fontSize:'12px', fontWeight:700, textDecoration:'none', boxShadow:`0 0 20px ${THEME.primary}50`}}>Generate video →</Link>
-          </div>
+        <div style={{background:"#111122", border:"1px solid #222", borderRadius:16, padding:12, maxWidth:600, margin:"20px auto", display:"flex", gap:8}}>
+          <input placeholder="Create a faceless TikTok video about 5 money habits..." style={{flex:1, background:"transparent", border:"none", color:"#fff", outline:"none"}}/>
+          <button onClick={()=>setActivePage('video')} style={{background:"#ff006e", color:"#fff", border:"none", padding:"10px 18px", borderRadius:12, cursor:"pointer"}}>Generate video →</button>
         </div>
-
-        {/* NEW - HERO CTA WITH PRICING */}
-        <div style={{display:'flex', gap:'12px', justifyContent:'center', marginTop:'28px', flexWrap:'wrap'}}>
-          <Link href="/signup" style={{background:THEME.primary, color:'white', padding:'14px 28px', borderRadius:'999px', fontSize:'14px', fontWeight:700, textDecoration:'none', boxShadow:`0 0 30px ${THEME.primary}50`}}>Get started for free →</Link>
-          <Link href="/pricing" style={{background:THEME.card, color:'white', padding:'14px 28px', borderRadius:'999px', fontSize:'14px', fontWeight:700, textDecoration:'none', border:`1px solid ${THEME.cardBorder}`}}>View pricing • Rs 8k</Link>
-        </div>
-      </div>
-
-      {/* FAQ - Dark Cards */}
-      <div style={{maxWidth:'720px', margin:'28px auto', padding:'0 12px', display:'grid', gap:'12px'}}>
-        <div style={{background:THEME.card, border:`1px solid ${THEME.cardBorder}`, borderRadius:'16px', padding:'16px'}}>
-          <h3 style={{fontSize:'16px', fontWeight:700, color:'white'}}>Can AI-generated videos be used commercially?</h3>
-          <p style={{fontSize:'13px', color:THEME.muted, marginTop:'8px', lineHeight:'1.6'}}>Yes - as long as your tool's paid plan grants commercial rights and the music and stock media are properly licensed. Life-AI's paid plans include full commercial rights and YouTube-licensed music, so you can publish to monetized channels, run ads, and do client work without copyright risk.</p>
-        </div>
-        <div style={{background:THEME.card, border:`1px solid ${THEME.cardBorder}`, borderRadius:'16px', padding:'16px'}}>
-          <h3 style={{fontSize:'16px', fontWeight:700, color:'white'}}>How long does it take to make an AI video?</h3>
-          <p style={{fontSize:'13px', color:THEME.muted, marginTop:'8px', lineHeight:'1.6'}}>Most AI video generators can produce a 30-60 seconds short video in under two minutes. Longer videos with multiple scenes usually render in five to ten minutes. With Life-AI, the average short-form video is ready in about two minutes from the moment you hit generate.</p>
-        </div>
-      </div>
-
-      {/* DARK CTA - Glowing */}
-      <div style={{maxWidth:'720px', margin:'28px auto', padding:'0 12px'}}>
-        <div style={{background:`radial-gradient(600px at 50% -20%, ${THEME.primary}15, transparent), ${THEME.card}`, borderRadius:'28px', padding:'32px 20px', textAlign:'center', border:`1px solid ${THEME.cardBorder}`, boxShadow:'0 20px 60px rgba(0,0,0,0.5)'}}>
-          <span style={{background:THEME.bg, color:THEME.accent, fontSize:'11px', padding:'6px 14px', borderRadius:'999px', border:`1px solid ${THEME.cardBorder}`}}>• Trusted by 14M+ creators worldwide</span>
-          <h2 style={{color:'white', fontSize:'28px', fontWeight:900, lineHeight:'1.2', marginTop:'18px'}}>Start creating videos<br/>with AI today</h2>
-          <div style={{display:'flex', gap:'12px', justifyContent:'center', marginTop:'20px', flexWrap:'wrap'}}>
-            <Link href="/signup" style={{background:THEME.primary, color:'white', padding:'14px 28px', borderRadius:'999px', fontSize:'15px', fontWeight:700, textDecoration:'none', boxShadow:`0 0 30px ${THEME.primary}60`}}>Get started for free →</Link>
-            <Link href="/pricing" style={{background:'transparent', color:THEME.muted, padding:'14px 22px', borderRadius:'999px', fontSize:'14px', fontWeight:600, textDecoration:'none', border:`1px solid ${THEME.cardBorder}`}}>See Rs 8k plan</Link>
-          </div>
-          <p style={{color:THEME.muted, fontSize:'12px', marginTop:'16px', lineHeight:'1.5'}}>Join 14M+ creators using Life-AI's AI video generator. Free plan - no credit card required.</p>
-        </div>
-      </div>
-
-      {/* FOOTER - PRICING ADDED */}
-      <div style={{background:'#090612', color:'white', padding:'32px 16px 20px', borderTop:`1px solid ${THEME.cardBorder}`, marginTop:'32px'}}>
-        <div style={{fontSize:'28px', fontWeight:900, display:'flex', alignItems:'center', gap:'8px'}}>
-          <span style={{background:THEME.primary, width:'32px', height:'32px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', color:'white', fontSize:'16px'}}>•</span> 
-          Life-AI
-        </div>
-        <p style={{color:THEME.muted, fontSize:'14px', marginTop:'12px', lineHeight:'1.6'}}>Create studio-quality videos from scripts, ideas, and long-form content in minutes with lifelike voices.</p>
-        <p style={{color:THEME.accent, fontSize:'13px', marginTop:'12px'}}>4.8/5 on G2 and Capterra</p>
         
-        <div style={{display:'flex', gap:'12px', marginTop:'16px'}}>
-          {['📷','in','X','▶️','f','✉️'].map((s,i)=><span key={i} style={{background:THEME.card, width:'36px', height:'36px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'14px', border:`1px solid ${THEME.cardBorder}`}}>{s}</span>)}
+        <div style={{display:"flex", gap:10, justifyContent:"center", marginTop:16}}>
+          <button onClick={()=>setActivePage('video')} style={{background:"#ff006e", color:"#fff", border:"none", padding:"12px 22px", borderRadius:24, cursor:"pointer"}}>Get started for free →</button>
+          <button onClick={()=>setActivePage('pricing')} style={{background:"#1a1a2e", color:"#fff", border:"1px solid #333", padding:"12px 22px", borderRadius:24}}>View pricing • Rs 8k</button>
         </div>
+      </div>
 
-        <div style={{marginTop:'32px', display:'grid', gap:'28px', gridTemplateColumns:'1fr 1fr'}}>
-          <div>
-            <p style={{color:THEME.muted, fontSize:'12px', letterSpacing:'2px'}}>FEATURES</p>
-            <div style={{marginTop:'12px', display:'grid', gap:'10px', fontSize:'14px', color:'#D1CFE0'}}>
-              <span>AI explainer video maker</span><span>AI music video generator</span><span>AI video generator</span><span>AI voiceover</span><span>AI avatar</span><span>Translator</span>
+      {/* REAL CLICK FEATURES GRID - Yahi main kaam hai jan! */}
+      <div style={{padding:20, maxWidth:1000, margin:"40px auto 0"}}>
+        <h3 style={{fontSize:14, letterSpacing:2, color:"#888"}}>FEATURES - REAL CLICK</h3>
+        <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:12, marginTop:16}}>
+          {FEATURES.map(f=>(
+            <div key={f.id} onClick={()=>!f.side && setActivePage(f.id)} 
+              style={{
+                background:f.side ? "#0a0a0a" : "#111122", 
+                border:`1px solid ${f.side ? "#222" : f.color}33`, 
+                borderRadius:16, padding:18, cursor: f.side ? "not-allowed" : "pointer",
+                opacity: f.side ? 0.5 : 1,
+                transition:"0.2s"
+              }}
+              onMouseEnter={(e)=>{ if(!f.side) (e.currentTarget as any).style.borderColor = f.color; }}
+              onMouseLeave={(e)=>{ if(!f.side) (e.currentTarget as any).style.borderColor = f.color+"33"; }}
+            >
+              <div style={{display:"flex", justifyContent:"space-between", alignItems:"start"}}>
+                <div style={{fontSize:28}}>{f.icon}</div>
+                <span style={{fontSize:10, background:f.side?"#222":f.color+"22", color: f.side?"#888":f.color, padding:"3px 8px", borderRadius:20, border:`1px solid ${f.color}`}}>{f.side ? "SIDE PE" : "REAL CLICK →"}</span>
+              </div>
+              <h4 style={{margin:"10px 0 4px", fontSize:15}}>{f.title}</h4>
+              <p style={{margin:0, fontSize:12, color:"#888"}}>{f.desc}</p>
             </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Footer Pricing - REAL CLICK */}
+      <div style={{padding:20, maxWidth:1000, margin:"20px auto"}}>
+        <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:20, fontSize:12, color:"#888", borderTop:"1px solid #1a1a2e", paddingTop:20}}>
+          <div>
+            <b style={{color:"#fff", fontSize:11, letterSpacing:1}}>FEATURES</b><br/><br/>
+            {FEATURES.map(f=> <div key={f.id} onClick={()=>setActivePage(f.id)} style={{cursor:"pointer", marginBottom:6, textDecoration: f.side ? "line-through" : "none"}}>{f.title} {f.side && "(Side Pe)"} →</div>)}
           </div>
           <div>
-            <p style={{color:THEME.muted, fontSize:'12px', letterSpacing:'2px'}}>PRICING</p>
-            <div style={{marginTop:'12px', display:'grid', gap:'10px', fontSize:'14px', color:'#D1CFE0'}}>
-              <Link href="/pricing" style={{color:THEME.accent, textDecoration:'none', fontWeight:700}}>Pricing • Rs 0 - Rs 15k</Link>
-              <Link href="/pricing" style={{color:'#D1CFE0', textDecoration:'none'}}>Free - 3 videos / month</Link>
-              <Link href="/pricing" style={{color:'#D1CFE0', textDecoration:'none'}}>Standard - Rs 8,000</Link>
-              <Link href="/pricing" style={{color:'#D1CFE0', textDecoration:'none'}}>Premium - Rs 15,000</Link>
-            </div>
+            <b style={{color:"#fff", fontSize:11, letterSpacing:1}}>PRICING</b><br/><br/>
+            <div style={{cursor:"pointer"}} onClick={()=>setActivePage('pricing')}>Pricing - Rs 0 - Rs 15k →<br/>Free - 3 videos / month<br/>Standard - Rs 8,000<br/>Premium - Rs 15,000</div>
           </div>
-        </div>
-
-        <div style={{borderTop:`1px solid ${THEME.cardBorder}`, marginTop:'32px', paddingTop:'16px', textAlign:'center'}}>
-          <p style={{color:THEME.muted, fontSize:'11px'}}>© 2026 Life-AI. All rights reserved.</p>
-        </div>
-
-        <div style={{background:THEME.card, borderRadius:'16px', padding:'20px', marginTop:'24px', border:`1px solid ${THEME.cardBorder}`}}>
-          <p style={{fontSize:'16px', fontWeight:700, color:'white'}}>Earn recurring commissions with the Life-AI affiliate program.</p>
-          <Link href="/signup" style={{background:THEME.primary, color:'white', padding:'10px 18px', borderRadius:'999px', fontSize:'13px', fontWeight:700, textDecoration:'none', display:'inline-block', marginTop:'16px'}}>Become an Affiliate</Link>
         </div>
       </div>
     </div>
-    </>
-  )
+  );
+}
+
+// REAL FEATURE PAGE - Har click pe ye khulega
+function FeaturePage({feature, onBack}:any){
+  if(!feature && onBack){
+    // Pricing page
+    return (
+      <div style={{background:"#050510", color:"#fff", minHeight:"100vh", padding:20}}>
+        <button onClick={onBack} style={{background:"#222", color:"#fff", border:"none", padding:"10px 16px", borderRadius:8, cursor:"pointer"}}>← Back to Landing</button>
+        <h1 style={{marginTop:20}}>💰 Pricing - Real Page</h1>
+        <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))", gap:12, marginTop:20}}>
+          <div style={{background:"#111122", border:"1px solid #222", borderRadius:16, padding:20}}><h3>Free</h3><p>3 videos / month</p><p style={{fontSize:24, color:"#00ff88"}}>Rs 0</p></div>
+          <div style={{background:"#111122", border:"1px solid #ff006e", borderRadius:16, padding:20}}><h3>Standard</h3><p>100 videos</p><p style={{fontSize:24, color:"#ff006e"}}>Rs 8,000</p></div>
+          <div style={{background:"#111122", border:"1px solid #8338ec", borderRadius:16, padding:20}}><h3>Premium</h3><p>Unlimited</p><p style={{fontSize:24, color:"#8338ec"}}>Rs 15,000</p></div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{background:"#050510", color:"#fff", minHeight:"100vh", padding:20, fontFamily:"system-ui"}}>
+      <button onClick={onBack} style={{background:"#222", color:"#fff", border:"none", padding:"10px 16px", borderRadius:8, cursor:"pointer"}}>← Back to Landing</button>
+      
+      <div style={{maxWidth:800, margin:"30px auto 0"}}>
+        <div style={{fontSize:48}}>{feature.icon}</div>
+        <h1 style={{fontSize:28, margin:"10px 0"}}>{feature.title}</h1>
+        <p style={{color:"#888"}}>{feature.desc}</p>
+        <span style={{background:"#00ff8833", color:"#00ff88", border:"1px solid #00ff88", padding:"4px 10px", borderRadius:20, fontSize:11}}>✅ REAL CLICK WORKING - {feature.id.toUpperCase()} PAGE ACTIVE</span>
+
+        <div style={{background:"#111122", border:"1px solid #222", borderRadius:16, padding:20, marginTop:20}}>
+          {feature.id === "video" && (
+            <>
+              <h3>🎥 MAIN FEATURE - Script to Video</h3>
+              <textarea placeholder="Yahan kahani likho jan..." style={{width:"100%", height:100, background:"#050510", border:"1px solid #333", color:"#fff", borderRadius:10, padding:10, marginTop:10}}></textarea>
+              <button style={{width:"100%", background:"#00ff88", color:"#000", border:"none", padding:14, borderRadius:10, fontWeight:"bold", marginTop:10, cursor:"pointer"}}>🚀 Generate Video - Phase 2 Me Full (Canvas FREE)</button>
+              <p style={{fontSize:12, color:"#0f0", marginTop:10}}>Pattern: Script → Photo (Canvas No Watermark) → Clips (5 Raaz) → Final Video</p>
+            </>
+          )}
+          {feature.id !== "video" && (
+            <>
+              <p>Ye {feature.title} ka REAL PAGE hai jan!</p>
+              <p style={{color:"#888", fontSize:13}}>Abhi Phase 1 me ACTIVE skeleton hai. Phase 2 me isko full functional banayenge same pattern se: Pehle iska core function → Test → Next.</p>
+              <button style={{width:"100%", background:feature.color, color:"#fff", border:"none", padding:14, borderRadius:10, fontWeight:"bold", marginTop:10, cursor:"pointer"}}>Test {feature.title} Function</button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
