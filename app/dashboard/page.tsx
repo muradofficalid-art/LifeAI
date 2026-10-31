@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import VoiceSelector from '@/components/VoiceSelector'
 
 const THEME = {
@@ -17,9 +17,57 @@ export default function Dashboard(){
   const [selectedVoice, setSelectedVoice] = useState('ur-PK-AsadNeural')
   const [loading, setLoading] = useState(false)
   const [audioUrl, setAudioUrl] = useState('')
+  
+  // ADMIN CONNECTION - Functional Only - No Design Change
+  const [isGod, setIsGod] = useState(false)
+  const [pricing, setPricing] = useState({ free: { limit: 5 }, standard: { price: 8000 }, premium: { price: 15000 } })
+  const [isUnlimited, setIsUnlimited] = useState(false)
+  const [todayCount, setTodayCount] = useState(0)
+
+  useEffect(()=>{
+    // 1. Check GOD user
+    const email = (localStorage.getItem('lifeai_user_email') || '').toLowerCase()
+    if(email.includes('murad') || email === 'murad@lifeai.com'){
+      setIsGod(true)
+    }
+    // 2. Load Admin Pricing from localStorage
+    const savedPricing = localStorage.getItem('lifeai_pricing')
+    const savedUnlimited = localStorage.getItem('lifeai_unlimited')
+    if(savedPricing){
+      try { setPricing(JSON.parse(savedPricing)) } catch(e){}
+    }
+    if(savedUnlimited){
+      setIsUnlimited(savedUnlimited === 'true')
+    }
+    // 3. Load from API also (latest)
+    fetch('/api/admin/pricing').then(r=>r.json()).then(data=>{
+      if(data && data.free) {
+        setPricing(data)
+        if(data.unlimited !== undefined) setIsUnlimited(data.unlimited)
+      }
+    }).catch(()=>{})
+    // 4. Load Today Count
+    const today = new Date().toDateString()
+    const savedDate = localStorage.getItem('lifeai_date')
+    if(savedDate !== today){
+      localStorage.setItem('lifeai_date', today)
+      localStorage.setItem('lifeai_count', '0')
+      setTodayCount(0)
+    } else {
+      setTodayCount(parseInt(localStorage.getItem('lifeai_count') || '0'))
+    }
+  },[])
 
   const handleCreate = async () => {
     if(!storyText.trim()) { alert('Pehle text likho jan!'); return; }
+
+    // ADMIN LIMIT CHECK - Functional
+    const limit = pricing.free?.limit || 5
+    if(!isGod && !isUnlimited && todayCount >= limit){
+      alert(`Free limit khatam jan! Aaj ke ${limit} videos ho gaye. Admin se limit barhao ya Premium lo!`)
+      return
+    }
+
     setLoading(true)
     setAudioUrl('')
     try {
@@ -32,9 +80,12 @@ export default function Dashboard(){
       const blob = await res.blob()
       const url = URL.createObjectURL(blob)
       setAudioUrl(url)
-      // Auto play
       const audio = new Audio(url)
       audio.play()
+      // Increase count
+      const newCount = todayCount + 1
+      setTodayCount(newCount)
+      localStorage.setItem('lifeai_count', String(newCount))
     } catch(e) {
       alert('Voice error jan, dobara try karo!')
     }
