@@ -2,7 +2,6 @@
 import { useState } from 'react'
 import VoiceSelector from '@/components/VoiceSelector'
 
-// OFFICIAL LIFE-AI THEME 2 - Deep Purple + Hot Pink
 const THEME = {
   bg: '#0E0A1F',
   card: '#1A1630',
@@ -15,6 +14,32 @@ const THEME = {
 
 export default function Dashboard(){
   const [storyText, setStoryText] = useState('')
+  const [selectedVoice, setSelectedVoice] = useState('ur-PK-AsadNeural')
+  const [loading, setLoading] = useState(false)
+  const [audioUrl, setAudioUrl] = useState('')
+
+  const handleCreate = async () => {
+    if(!storyText.trim()) { alert('Pehle text likho jan!'); return; }
+    setLoading(true)
+    setAudioUrl('')
+    try {
+      const res = await fetch('/api/voice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: storyText, voice: selectedVoice })
+      })
+      if(!res.ok) throw new Error('Voice failed')
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      setAudioUrl(url)
+      // Auto play
+      const audio = new Audio(url)
+      audio.play()
+    } catch(e) {
+      alert('Voice error jan, dobara try karo!')
+    }
+    setLoading(false)
+  }
 
   const items=[
     {t:'Script to video', i:'/workflows/1.jpg'},
@@ -54,13 +79,19 @@ export default function Dashboard(){
         ></textarea>
         <div style={{display:'flex', justifyContent:'space-between', marginTop:'8px', alignItems:'center'}}>
           <span style={{fontSize:'12px', color:THEME.muted}}>👤 ✦</span>
-          <button style={{background:THEME.primary, color:'white', border:'none', padding:'6px 12px', borderRadius:'999px', fontSize:'11px', fontWeight:700}}>✦ Create →</button>
+          <button onClick={handleCreate} disabled={loading} style={{background:THEME.primary, color:'white', border:'none', padding:'6px 12px', borderRadius:'999px', fontSize:'11px', fontWeight:700, opacity: loading ? 0.6 : 1}}>
+            {loading ? '...Generating' : '✦ Create →'}
+          </button>
         </div>
+        {audioUrl && (
+          <div style={{marginTop:'10px'}}>
+            <audio controls src={audioUrl} style={{width:'100%', height:'36px'}}></audio>
+          </div>
+        )}
       </div>
 
-      {/* VOICE SELECTOR - ADDED HERE - Design Safe */}
       <div style={{margin:'0 14px'}}>
-        <VoiceSelector text={storyText} />
+        <VoiceSelector text={storyText} selectedVoice={selectedVoice} onVoiceChange={setSelectedVoice} />
       </div>
 
       <p style={{fontSize:'10px', color:THEME.muted, padding:'0 14px', marginBottom:'8px', marginTop:'16px', letterSpacing:'1px'}}>VIDEO WORKFLOWS</p>
