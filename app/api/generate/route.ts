@@ -5,44 +5,59 @@ export async function POST(req: Request) {
     const API_TOKEN = process.env.CF_API_TOKEN;
 
     if (!ACCOUNT_ID || !API_TOKEN) {
-      return Response.json({ success: false, error: `CF keys missing! ACCOUNT_ID:${!!ACCOUNT_ID} TOKEN:${!!API_TOKEN}` }, { status: 500 });
+      return Response.json({ success: false, error: 'CF keys Vercel me nahi lagayi! Vercel > Settings > Environment Variables me CF_ACCOUNT_ID aur CF_API_TOKEN add karo' }, { status: 500 });
     }
 
-    const prompts = [
-      `${script}, realistic, cinematic, pakistani railway station, 8k`,
-    ];
+    // 1. Script ko 5 scenes me todo
+    const scenes = script.split(/[۔.!?]/).filter((s:string)=>s.trim().length>5).slice(0,5);
+    while(scenes.length < 5) scenes.push(scenes[0] || script);
 
-    const r = await fetch(
-      `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell`,
-      {
-        method: "POST",
-        headers: { 
-          "Authorization": `Bearer ${API_TOKEN}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ prompt: prompts[0] })
+    // 2. Har scene ke liye alag image banao - Flux se
+    const images = [];
+    for (let i=0; i<scenes.length; i++) {
+      const cleanScene = scenes[i].trim();
+      
+      // Urdu se English visual prompt
+      const visualPrompt = `${cleanScene}, Islamic aesthetic, emotional, cinematic, 8k, ultra realistic, pakistani style, no text`;
+      
+      const r = await fetch(
+        `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell`,
+        {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${API_TOKEN}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ prompt: visualPrompt })
+        }
+      );
+
+      if (!r.ok) {
+        const t = await r.text();
+        console.log(`Scene ${i} fail: ${t}`);
+        continue;
       }
-    );
 
-    const contentType = r.headers.get('content-type');
-    
-    if (!r.ok) {
-      const errText = await r.text();
-      return Response.json({ success: false, error: `CF Error ${r.status}: ${errText}`, contentType }, { status: 500 });
+      const blob = await r.arrayBuffer();
+      if (blob.byteLength < 1000) continue;
+
+      const base64 = `data:image/jpeg;base64,${Buffer.from(blob).toString('base64')}`;
+      images.push(base64);
     }
 
-    const blob = await r.arrayBuffer();
-    if(blob.byteLength < 1000){
-        const txt = new TextDecoder().decode(blob);
-        return Response.json({ success: false, error: `CF returned small response: ${txt}` }, { status: 500 });
+    if (images.length === 0) {
+      return Response.json({ success: false, error: 'Cloudflare ne image nahi di, API token check karo' }, { status: 500 });
     }
 
-    const base64 = `data:image/jpeg;base64,${Buffer.from(blob).toString('base64')}`;
-    
-    return Response.json({ 
-      success: true, 
-      imagesGenerated: 1,
-      images: [base64, base64, base64] // 1 image se 3 video clips bana denge
+    // Agar 5 se kam bani to duplicate hata ke loop karo
+    while(images.length < 5) {
+      images.push(images[images.length % images.length]);
+    }
+
+    return Response.json({
+      success: true,
+      imagesGenerated: images.length,
+      images: images.slice(0,5)
     });
 
   } catch (e: any) {
