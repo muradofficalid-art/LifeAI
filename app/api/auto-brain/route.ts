@@ -1,74 +1,30 @@
-export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
-
-async function callBrain(prompt: string, server: string, token: string, retries = 3): Promise<string> {
-  for (let i = 0; i < retries; i++) {
-    try {
-      const res = await fetch(server, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ inputs: prompt }),
-      });
-
-      if (res.status === 503) {
-        // Model loading - wait 10 sec and retry
-        await new Promise(r => setTimeout(r, 10000));
-        continue;
-      }
-
-      if (!res.ok) {
-        const txt = await res.text();
-        throw new Error(`HF ${res.status}: ${txt.slice(0,200)}`);
-      }
-
-      const blob = await res.blob();
-      const arrayBuffer = await blob.arrayBuffer();
-      const base64 = `data:${blob.type};base64,${Buffer.from(arrayBuffer).toString('base64')}`;
-      return base64;
-    } catch (e) {
-      if (i === retries - 1) throw e;
-      await new Promise(r => setTimeout(r, 5000));
-    }
-  }
-  throw new Error("Brain failed after retries");
-}
 
 export async function POST(req: Request) {
   try {
     const { input } = await req.json();
-    if (!input) return Response.json({ success: false, error: "Input empty" }, { status: 400 });
+    const key = process.env.PIXABAY_KEY;
+    if (!key) return Response.json({ success: false, error: "PIXABAY_KEY nahi mili Vercel me!" });
 
-    const server = process.env.MY_BRAIN_SERVER;
-    const token = process.env.HF_TOKEN;
-    if (!server || !token) return Response.json({ success: false, error: "Env missing" }, { status: 500 });
-
-    const scenes = [
-      `${input}, wide establishing shot, empty foggy road night, slow dolly forward`,
-      `${input}, closeup wet road rain reflection, shallow depth`,
-      `${input}, side tracking shot, trees parallax, fog moving`,
-      `${input}, low angle, dramatic flicker light in distance, cinematic`,
-      `${input}, final wide shot, hope light, smooth camera push in`
-    ];
+    const sentences = input.split(/[.!?]+/).filter((s:string)=>s.trim().length > 8);
+    const scenes = sentences.length >= 5 ? sentences.slice(0,5) : Array(5).fill(input);
 
     const clips = [];
-    for (const scene of scenes) {
-      const finalPrompt = `${scene}, ultra realistic, 8K, anamorphic 35mm lens, volumetric fog, wet asphalt reflection, cinematic lighting, highly detailed, no cartoon, no logo, no watermark, no text`;
-      const imageUrl = await callBrain(finalPrompt, server, token);
-      clips.push({
-        imageUrl,
-        movement: "FORWARD_DOLLY + PARALLAX_FOG + RAIN",
-        duration: 4,
-        prompt: scene
+    for (const text of scenes) {
+      const q = text.split(' ').slice(0,3).join(' ') || "nature cinematic";
+      const r = await fetch(`https://pixabay.com/api/videos/?key=${key}&q=${encodeURIComponent(q)}&per_page=3&safesearch=true&order=popular`);
+      const j = await r.json();
+      // Large HD video
+      const videoUrl = j?.hits?.[0]?.videos?.large?.url || j?.hits?.[0]?.videos?.medium?.url || j?.hits?.[0]?.videos?.small?.url;
+      
+      clips.push({ 
+        text: text.trim().slice(0, 100), 
+        videoUrl: videoUrl || "https://videos.pexels.com/video-files/18069234/18069234-hd_1920_1080_30fps.mp4",
+        query: q
       });
     }
-
-    return Response.json({ success: true, totalDuration: 20, clips });
-
-  } catch (e: any) {
-    console.error(e);
-    return Response.json({ success: false, error: e.message }, { status: 500 });
+    return Response.json({ success: true, clips });
+  } catch(e:any){
+    return Response.json({ success: false, error: e.message });
   }
 }
