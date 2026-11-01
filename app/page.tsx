@@ -27,7 +27,7 @@ export default function LandingPage() {
 
   useEffect(()=>{ setFreeUsed(parseInt(localStorage.getItem("lifeai_free_used") || "0")); },[]);
 
-  // FINAL FLIKI BRAIN - PIXABAY ONLY - NO IMAGE - DIRECT STOCK VIDEO
+  // FINAL PRO - COPYRIGHT SAFE + USER SATISFY
   const generateOnLanding = async () => {
     if(!idea.trim()){ alert("Jan pehle idea likho! Eg: 5 money habits"); return; }
     if(freeUsed >= 5){ alert("5 FREE khatam jan! Pricing - Rs 8,000 me 60 videos!"); router.push('/pricing'); return; }
@@ -36,7 +36,6 @@ export default function LandingPage() {
       const canvas = canvasRef.current!; const ctx = canvas.getContext('2d')!;
       if(ratio === "16:9"){ canvas.width = 1280; canvas.height = 720; } else { canvas.width = 720; canvas.height = 1280; }
       
-      // 1 CALL = 5 CLIPS - FLIKI STYLE - NO 5 TIMES FETCH
       setProgress(15);
       const res = await fetch('/api/auto-brain', {
         method: 'POST',
@@ -74,22 +73,63 @@ export default function LandingPage() {
       const draw = () => {
         if(frame >= totalFrames){ recorder.stop(); return; }
         const idx = Math.min(Math.floor(frame / (4*30)), loadedVids.length-1);
+        const clip = data.clips[idx];
         try{ 
           const v = loadedVids[idx];
           if(v.paused) v.play().catch(()=>{});
-          ctx.drawImage(v, 0, 0, canvas.width, canvas.height); 
+          
+          // === COPYRIGHT SAFE EDITING - YOUTUBE ORIGINAL ===
+          const progressInScene = (frame % (4*30)) / (4*30);
+          let scale = 1, x=0, y=0;
+          if(clip.effect==="zoomIn") scale = 1 + progressInScene*0.25;
+          if(clip.effect==="zoomOut") scale = 1.25 - progressInScene*0.25;
+          if(clip.effect==="panLeft") x = -progressInScene*100;
+          if(clip.effect==="panRight") x = progressInScene*100;
+
+          ctx.save();
+          ctx.translate(canvas.width/2 + x, canvas.height/2 + y);
+          ctx.scale(scale, scale);
+          ctx.translate(-canvas.width/2, -canvas.height/2);
+          ctx.drawImage(v, 0, 0, canvas.width, canvas.height);
+          ctx.restore();
+
+          // Cinematic dark overlay - original grading
+          ctx.fillStyle = "rgba(5,5,16,0.35)";
+          ctx.fillRect(0,0,canvas.width,canvas.height);
+
+          // Vignette corners - Pro look
+          const grad = ctx.createRadialGradient(canvas.width/2, canvas.height/2, canvas.height*0.3, canvas.width/2, canvas.height/2, canvas.width);
+          grad.addColorStop(0, "rgba(0,0,0,0)");
+          grad.addColorStop(1, "rgba(0,0,0,0.5)");
+          ctx.fillStyle = grad;
+          ctx.fillRect(0,0,canvas.width,canvas.height);
+
+          // TikTok Style Text Box - USER SATISFY
+          const txt = clip.text;
+          ctx.fillStyle = "rgba(0,0,0,0.75)";
+          ctx.fillRect(20, canvas.height-150, canvas.width-40, 85);
+          ctx.fillStyle = "#fff";
+          ctx.font = `bold ${ratio==="16:9" ? 20 : 16}px system-ui`;
+          ctx.textAlign = "center";
+          ctx.strokeStyle = "#000";
+          ctx.lineWidth = 3;
+          // Wrap 2 lines
+          const line1 = txt.slice(0,45);
+          const line2 = txt.slice(45,90);
+          ctx.strokeText(line1, canvas.width/2, canvas.height-115);
+          ctx.fillText(line1, canvas.width/2, canvas.height-115);
+          if(line2){ ctx.strokeText(line2, canvas.width/2, canvas.height-90); ctx.fillText(line2, canvas.width/2, canvas.height-90); }
+
+          // Watermark - Original content proof
+          ctx.fillStyle = "rgba(255,255,255,0.9)";
+          ctx.font = "bold 11px system-ui";
+          ctx.textAlign = "left";
+          ctx.fillText("Life-AI • Original Edit", 28, 28);
+          ctx.textAlign = "right";
+          ctx.fillStyle = "#00ff88";
+          ctx.fillText(`Scene ${idx+1}/5 • ${clip.effect}`, canvas.width-28, 28);
+
         }catch{}
-        ctx.fillStyle = "rgba(0,0,0,0.45)"; 
-        ctx.fillRect(0, canvas.height-120, canvas.width, 120);
-        ctx.fillStyle = "#fff"; 
-        ctx.font = `bold ${ratio==="16:9" ? 26 : 20}px system-ui`; 
-        ctx.textAlign = "center";
-        // Wrap text
-        const txt = data.clips[idx].text;
-        ctx.fillText(txt.slice(0,80), canvas.width/2, canvas.height-60);
-        ctx.fillStyle = "#00ff88"; 
-        ctx.font = "14px system-ui"; 
-        ctx.fillText(`Life-AI Fliki Mode • ${ratio} • Scene ${idx+1}/5`, canvas.width/2, canvas.height - 20);
         frame++; requestAnimationFrame(draw);
       }; draw();
       
@@ -115,14 +155,14 @@ export default function LandingPage() {
         </div>
       </header>
       <div style={{textAlign:"center", padding:"60px 20px 30px"}}>
-        <div style={{fontSize:12, color:"#00ff88", background:"#00ff8822", border:"1px solid #00ff8844", display:"inline-block", padding:"5px 14px", borderRadius:20}}>• Fliki Mode • Pixabay Stock • HD</div>
+        <div style={{fontSize:12, color:"#00ff88", background:"#00ff8822", border:"1px solid #00ff8844", display:"inline-block", padding:"5px 14px", borderRadius:20}}>• Fliki Pro • 5 Scenes • Copyright Safe • HD</div>
         <h1 style={{fontSize:42, margin:"20px 0", lineHeight:1.1, fontWeight:900}}>Turn idea into videos<br/><span style={{background:"linear-gradient(90deg,#ff006e,#a78bfa)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent"}}>with AI voices</span></h1>
-        <p style={{color:"#888", fontSize:14}}>Generate & Download FREE - 5 Videos / Month - Max 1 Min - No Watermark</p>
+        <p style={{color:"#888", fontSize:14}}>5 Unique Scenes • Zoom Effects • Original Edit • No Reused Content</p>
         <div style={{background:"#111122", border:"1px solid #222", borderRadius:18, padding:14, maxWidth:680, margin:"24px auto"}}>
           <div style={{display:"flex", gap:8}}><input value={idea} onChange={e=>setIdea(e.target.value)} placeholder="Create a faceless TikTok video about 5 money habits..." style={{flex:1, background:"#0a0a18", border:"1px solid #222", color:"#fff", outline:"none", fontSize:14, padding:"12px 14px", borderRadius:12}}/><button onClick={generateOnLanding} disabled={generating} style={{background: generating ? "#555" : "#ff006e", color:"#fff", border:"none", padding:"12px 20px", borderRadius:12, cursor:"pointer", fontWeight:700}}>{generating ? `${progress}%` : "Generate →"}</button></div>
           <div style={{display:"flex", gap:8, marginTop:12, justifyContent:"center", flexWrap:"wrap"}}><button onClick={()=>setRatio("16:9")} style={{background: ratio==="16:9" ? "#ff006e" : "#1a1a2e", color:"#fff", border:`1px solid ${ratio==="16:9" ? "#ff006e" : "#333"}`, padding:"7px 14px", borderRadius:20, cursor:"pointer", fontSize:12, fontWeight:600}}>📺 16:9</button><button onClick={()=>setRatio("9:16")} style={{background: ratio==="9:16" ? "#ff006e" : "#1a1a2e", color:"#fff", border:`1px solid ${ratio==="9:16" ? "#ff006e" : "#333"}`, padding:"7px 14px", borderRadius:20, cursor:"pointer", fontSize:12, fontWeight:600}}>📱 9:16</button></div>
         </div>
-        {(generating || videoUrl) && (<div style={{maxWidth:700, margin:"20px auto", background:"#111122", border:"1px solid #2a2a4e", borderRadius:20, padding:16}}>{generating && <div><div style={{width:"100%", height:8, background:"#1a1a2e", borderRadius:10, overflow:"hidden"}}><div style={{width:`${progress}%`, height:"100%", background:"linear-gradient(90deg,#ff006e,#a78bfa)", transition:"width 0.5s"}}></div></div><p style={{textAlign:"center", fontSize:11, color:"#888", marginTop:8}}>🎬 Fliki Mode - Pixabay Stock {progress}%</p></div>}{videoUrl && (<><video src={videoUrl} controls autoPlay style={{width:"100%", maxHeight: ratio==="9:16" ? 500 : 400, borderRadius:12, background:"#000"}}></video><div style={{display:"flex", gap:10, marginTop:12}}><a href={videoUrl} download={`life-ai-${Date.now()}.webm`} style={{flex:1, background:"#00ff88", color:"#000", padding:"12px", borderRadius:12, textAlign:"center", fontWeight:800, textDecoration:"none", fontSize:13}}>⬇️ Download FREE</a><button onClick={()=>{setAuthMode("signup"); setShowAuth(true)}} style={{flex:1, background:"#ff006e", color:"#fff", border:"none", padding:"12px", borderRadius:12, fontWeight:700, cursor:"pointer", fontSize:13}}>Get 60 Videos - Rs 8k →</button></div></>)}</div>)}
+        {(generating || videoUrl) && (<div style={{maxWidth:700, margin:"20px auto", background:"#111122", border:"1px solid #2a2a4e", borderRadius:20, padding:16}}>{generating && <div><div style={{width:"100%", height:8, background:"#1a1a2e", borderRadius:10, overflow:"hidden"}}><div style={{width:`${progress}%`, height:"100%", background:"linear-gradient(90deg,#ff006e,#a78bfa)", transition:"width 0.5s"}}></div></div><p style={{textAlign:"center", fontSize:11, color:"#888", marginTop:8}}>🎬 Fliki Pro - 5 Unique Scenes + Zoom Effects {progress}%</p></div>}{videoUrl && (<><video src={videoUrl} controls autoPlay style={{width:"100%", maxHeight: ratio==="9:16" ? 500 : 400, borderRadius:12, background:"#000"}}></video><div style={{display:"flex", gap:10, marginTop:12}}><a href={videoUrl} download={`life-ai-${Date.now()}.webm`} style={{flex:1, background:"#00ff88", color:"#000", padding:"12px", borderRadius:12, textAlign:"center", fontWeight:800, textDecoration:"none", fontSize:13}}>⬇️ Download FREE</a><button onClick={()=>{setAuthMode("signup"); setShowAuth(true)}} style={{flex:1, background:"#ff006e", color:"#fff", border:"none", padding:"12px", borderRadius:12, fontWeight:700, cursor:"pointer", fontSize:13}}>Get 60 Videos - Rs 8k →</button></div></>)}</div>)}
       </div>
       <div style={{ padding: "50px 20px", background: "#080810", borderTop: "1px solid #1a1a2e" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
@@ -132,21 +172,7 @@ export default function LandingPage() {
           </div>
         </div>
       </div>
-      <div style={{padding:"60px 20px", maxWidth:1100, margin:"0 auto"}}>
-        <h2 style={{textAlign:"center", fontSize:24, fontWeight:800, marginBottom:30}}>How It Works - 3 Steps</h2>
-        <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:16}}>
-          <div onClick={()=>setDetail({open:true, icon:"✍️", title:"1. Write Idea - Full Detail", desc:"Yahan se shuru hota hai jan! Tumhe bas apna idea likhna hai, AI khud samajh jayega.", points:["Eg: 5 money habits for students in Pakistan","Eg: How to make chai - funny TikTok","AI 10 sec me script banayega","Urdu / English / Hindi sab supported","FREE me idea se video - no limit on ideas"]})} style={{background:"#111122", border:"1px solid #222", borderRadius:18, padding:20, textAlign:"center", cursor:"pointer"}}><div style={{fontSize:32}}>✍️</div><h4>1. Write Idea</h4><p style={{fontSize:13, color:"#888"}}>Eg: 5 money habits for students</p><span style={{fontSize:10, color:"#00ff88", background:"#00ff8822", padding:"3px 8px", borderRadius:10, border:"1px solid #00ff8844"}}>Click for Detail →</span></div>
-          <div onClick={()=>setDetail({open:true, icon:"⚡", title:"2. Generate FREE - Full Detail", desc:"Generate button dabao aur AI 30 sec me video bana dega jan! Canvas engine FREE hai.", points:["16:9 = YouTube ke liye best","9:16 = TikTok/Reels ke liye vertical","Canvas engine - no API cost","Max 1 Min - FREE me","Progress bar ke saath live"]})} style={{background:"#111122", border:"1px solid #222", borderRadius:18, padding:20, textAlign:"center", cursor:"pointer"}}><div style={{fontSize:32}}>⚡</div><h4>2. Generate FREE</h4><p style={{fontSize:13, color:"#888"}}>16:9 YouTube or 9:16 TikTok - 30 sec</p><span style={{fontSize:10, color:"#00ff88", background:"#00ff8822", padding:"3px 8px", borderRadius:10, border:"1px solid #00ff8844"}}>Click for Detail →</span></div>
-          <div onClick={()=>setDetail({open:true, icon:"⬇️", title:"3. Download HD - Full Detail", desc:"Video tayar! Ab download karo HD me, no watermark jan! Direct browser se.", points:["No watermark FREE me bhi","HD quality - 1280x720 or 720x1280","WebM format - sab devices pe chalega","Direct download - no signup needed","5 FREE / month - local storage se track"]})} style={{background:"#111122", border:"1px solid #222", borderRadius:18, padding:20, textAlign:"center", cursor:"pointer"}}><div style={{fontSize:32}}>⬇️</div><h4>3. Download HD</h4><p style={{fontSize:13, color:"#888"}}>No watermark - FREE - Direct download</p><span style={{fontSize:10, color:"#00ff88", background:"#00ff8822", padding:"3px 8px", borderRadius:10, border:"1px solid #00ff8844"}}>Click for Detail →</span></div>
-        </div>
-      </div>
-      <footer style={{padding:"30px 20px", borderTop:"1px solid #1a1a2e", background:"#050510"}}>
-        <div style={{maxWidth:1100, margin:"0 auto", display:"grid", gridTemplateColumns:"2fr 1fr 1fr", gap:20, fontSize:12, color:"#888"}}>
-          <div><div style={{display:"flex", alignItems:"center", gap:8}}><div style={{width:8,height:8,background:"#ff006e",borderRadius:"50%"}}></div><b style={{color:"#fff"}}>Life-AI</b></div><p style={{marginTop:10, lineHeight:1.6}}>Pakistan's #1 AI Video Generator. Turn ideas into TikTok, Reels, YouTube videos FREE. 5 FREE/month, Max 1 Min, No Watermark.</p></div>
-          <div><b style={{color:"#fff", fontSize:11}}>TOOLS</b><br/><br/>{FEATURES.map(f=> <div key={f.id} style={{marginBottom:6}}>{f.icon} {f.title}</div>)}</div>
-          <div><b style={{color:"#fff", fontSize:11}}>LINKS</b><br/><br/><div onClick={()=>window.scrollTo({top:0, behavior:'smooth'})} style={{cursor:"pointer", marginBottom:6}}>↑ Back to Top</div><div onClick={()=>router.push('/pricing')} style={{cursor:"pointer", marginBottom:6}}>Pricing - Rs 8,000</div><div>Contact: lifeai.pk@gmail.com</div></div>
-        </div>
-      </footer>
+      <footer style={{padding:"30px 20px", borderTop:"1px solid #1a1a2e", background:"#050510", textAlign:"center", fontSize:12, color:"#666"}}>Life-AI • Fliki Pro • Copyright Safe Original Edit • {freeUsed}/5 FREE</footer>
     </div>
   );
 }
