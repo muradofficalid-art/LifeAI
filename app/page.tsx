@@ -31,40 +31,79 @@ export default function LandingPage() {
     try {
       const canvas = canvasRef.current!; const ctx = canvas.getContext('2d')!;
       canvas.width = ratio==="16:9"?1280:720; canvas.height = ratio==="16:9"?720:1280;
-      const res = await fetch('/api/auto-brain', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ input: idea }) });
-      const data = await res.json(); if(!data.success) throw new Error(data.error);
-      const loadedVids: HTMLVideoElement[] = [];
-      for(let i=0;i<data.clips.length;i++){
-        setProgress(20+i*12);
-        const v = document.createElement('video'); v.crossOrigin="anonymous"; v.muted=true; v.playsInline=true; v.src=data.clips[i].videoUrl;
-        await new Promise<void>(r=>{ v.onloadeddata=()=>r(); v.onerror=()=>r(); setTimeout(()=>r(),2500); });
-        loadedVids.push(v);
+
+      // --- NEW: Cloudflare FLUX API CALL ---
+      setProgress(10);
+      const res = await fetch('/api/generate', { 
+        method:'POST', 
+        headers:{'Content-Type':'application/json'}, 
+        body: JSON.stringify({ script: idea }) 
+      });
+      const data = await res.json(); 
+      if(!data.success) throw new Error(data.error || "Image generation fail");
+      if(!data.images || data.images.length===0) throw new Error("No images returned");
+
+      setProgress(40);
+      // Load base64 images
+      const loadedImgs: HTMLImageElement[] = [];
+      for(let base64 of data.images){
+        const img = new Image();
+        img.src = base64;
+        await new Promise<void>(r=>{ img.onload=()=>r(); img.onerror=()=>r(); });
+        loadedImgs.push(img);
       }
-      setProgress(85);
-      const stream = canvas.captureStream(30); const recorder = new MediaRecorder(stream,{mimeType:'video/webm'}); const chunks:Blob[]=[];
+
+      setProgress(60);
+      // --- Image -> Video with Zoom Effect ---
+      const stream = canvas.captureStream(30); 
+      const recorder = new MediaRecorder(stream,{mimeType:'video/webm'}); 
+      const chunks:Blob[]=[];
       recorder.ondataavailable=e=>chunks.push(e.data);
-      const recPromise = new Promise<string>(res=>{ recorder.onstop=()=>res(URL.createObjectURL(new Blob(chunks,{type:'video/webm'}))); });
-      recorder.start(); let frame=0; const total=20*30;
+      const recPromise = new Promise<string>(res=>{ 
+        recorder.onstop=()=>res(URL.createObjectURL(new Blob(chunks,{type:'video/webm'}))); 
+      });
+      recorder.start(); 
+      let frame=0; 
+      const secsPerImg = 4; // 4 sec per image
+      const total = loadedImgs.length * secsPerImg * 30;
+
       const draw=()=>{
         if(frame>=total){ recorder.stop(); return; }
-        const idx = Math.min(Math.floor(frame/(4*30)), loadedVids.length-1);
-        const clip = data.clips[idx];
+        const idx = Math.min(Math.floor(frame/(secsPerImg*30)), loadedImgs.length-1);
+        const pIn = (frame%(secsPerImg*30))/(secsPerImg*30);
+        
         try{
-          const v=loadedVids[idx]; if(v.paused) v.play().catch(()=>{});
-          const pIn = (frame%(4*30))/(4*30); let scale=1,x=0; if(clip.effect==="zoomIn") scale=1+pIn*0.2; if(clip.effect==="zoomOut") scale=1.2-pIn*0.2; if(clip.effect==="panLeft") x=-pIn*80; if(clip.effect==="panRight") x=pIn*80;
-          ctx.save(); ctx.translate(canvas.width/2+x,canvas.height/2); ctx.scale(scale,scale); ctx.translate(-canvas.width/2,-canvas.height/2);
-          ctx.drawImage(v,0,0,canvas.width,canvas.height); ctx.restore();
+          const img = loadedImgs[idx];
+          // ZoomIn effect 1.0 -> 1.2
+          const scale = 1 + pIn * 0.25;
+          ctx.save(); 
+          ctx.translate(canvas.width/2,canvas.height/2); 
+          ctx.scale(scale,scale); 
+          ctx.translate(-canvas.width/2,-canvas.height/2);
+          // Cover fit
+          const imgRatio = img.width/img.height;
+          const canvasRatio = canvas.width/canvas.height;
+          let dw, dh, dx, dy;
+          if(imgRatio > canvasRatio){ dh=canvas.height; dw=dh*imgRatio; dx=(canvas.width-dw)/2; dy=0; }
+          else { dw=canvas.width; dh=dw/imgRatio; dx=0; dy=(canvas.height-dh)/2; }
+          ctx.drawImage(img,dx,dy,dw,dh); 
+          ctx.restore();
+
           ctx.fillStyle="rgba(0,0,0,0.35)"; ctx.fillRect(0,0,canvas.width,canvas.height);
           ctx.fillStyle="rgba(0,0,0,0.7)"; ctx.fillRect(20,canvas.height-130,canvas.width-40,80);
           ctx.fillStyle="#fff"; ctx.font=`bold ${ratio==="16:9"?18:15}px system-ui`; ctx.textAlign="center";
-          ctx.fillText(clip.text.slice(0,55),canvas.width/2,canvas.height-85);
-          ctx.fillStyle="#00ff88"; ctx.font="10px system-ui"; ctx.fillText(`${clip.query} • Scene ${idx+1}/5 • ${freeUsed+1}/100`,canvas.width/2,canvas.height-60);
+          ctx.fillText(idea.slice(0,55),canvas.width/2,canvas.height-85);
+          ctx.fillStyle="#00ff88"; ctx.font="10px system-ui"; ctx.fillText(`AI Generated • Scene ${idx+1}/${loadedImgs.length} • ${freeUsed+1}/100`,canvas.width/2,canvas.height-60);
         }catch{}
-        frame++; requestAnimationFrame(draw);
+        frame++; 
+        if(frame%30===0) setProgress(60 + Math.floor((frame/total)*35));
+        requestAnimationFrame(draw);
       }; draw();
-      const url=await recPromise; setProgress(100); setVideoUrl(url);
+      const url=await recPromise; 
+      setProgress(100); setVideoUrl(url);
       const n=freeUsed+1; setFreeUsed(n); localStorage.setItem("lifeai_free_used",n.toString());
-    }catch(e:any){ alert(e.message); } setGenerating(false);
+    }catch(e:any){ alert(e.message); console.error(e); } 
+    setGenerating(false);
   };
 
   return (
@@ -76,8 +115,8 @@ export default function LandingPage() {
       </header>
 
       <div style={{textAlign:"center", padding:"50px 20px 20px"}}>
-        <div style={{fontSize:11, color:"#00ff88", background:"#00ff8822", border:"1px solid #00ff8844", display:"inline-block", padding:"5px 12px", borderRadius:20}}>• Fliki Pro • Smart Matching • Copyright Safe</div>
-        <h1 style={{fontSize:38, fontWeight:900, margin:"16px 0"}}>Turn idea into videos<br/><span style={{background:"linear-gradient(90deg,#ff006e,#a78bfa)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent"}}>with AI voices</span></h1>
+        <div style={{fontSize:11, color:"#00ff88", background:"#00ff8822", border:"1px solid #00ff8844", display:"inline-block", padding:"5px 12px", borderRadius:20}}>• Fliki Pro • FLUX AI • Copyright Safe</div>
+        <h1 style={{fontSize:38, fontWeight:900, margin:"16px 0"}}>Turn idea into videos<br/><span style={{background:"linear-gradient(90deg,#ff006e,#a78bfa)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent"}}>with AI images</span></h1>
         <div style={{background:"#111122", border:"1px solid #222", borderRadius:18, padding:14, maxWidth:680, margin:"20px auto"}}>
           <div style={{display:"flex", gap:8}}><input value={idea} onChange={e=>setIdea(e.target.value)} placeholder="Lahore Railway Station per aik admi betha chai pee raha tha..." style={{flex:1, background:"#0a0a18", border:"1px solid #222", color:"#fff", padding:"12px", borderRadius:12}}/><button onClick={generateOnLanding} disabled={generating} style={{background: generating?"#555":"#ff006e", color:"#fff", border:"none", padding:"12px 18px", borderRadius:12, fontWeight:700}}>{generating?`${progress}%`:"Generate →"}</button></div>
           <div style={{display:"flex", gap:8, justifyContent:"center", marginTop:10}}><button onClick={()=>setRatio("16:9")} style={{background:ratio==="16:9"?"#ff006e":"#1a1a2e", color:"#fff", border:"1px solid #333", padding:"6px 12px", borderRadius:20, fontSize:12}}>📺 16:9</button><button onClick={()=>setRatio("9:16")} style={{background:ratio==="9:16"?"#ff006e":"#1a1a2e", color:"#fff", border:"1px solid #333", padding:"6px 12px", borderRadius:20, fontSize:12}}>📱 9:16</button></div>
@@ -95,23 +134,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-      <div style={{padding:"50px 20px", maxWidth:1100, margin:"0 auto"}}>
-        <h2 style={{textAlign:"center", fontSize:22, fontWeight:800}}>How It Works - 3 Steps</h2>
-        <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(250px,1fr))", gap:14, marginTop:20}}>
-          <div style={{background:"#111122", border:"1px solid #222", borderRadius:16, padding:16, textAlign:"center"}}><div style={{fontSize:28}}>✍️</div><h4>1. Write Idea</h4><p style={{fontSize:12, color:"#888"}}>Lahore station chai wala idea likho - AI samjhega</p></div>
-          <div style={{background:"#111122", border:"1px solid #222", borderRadius:16, padding:16, textAlign:"center"}}><div style={{fontSize:28}}>⚡</div><h4>2. Generate FREE</h4><p style={{fontSize:12, color:"#888"}}>16:9 / 9:16 - 5 unique scenes - smart matching</p></div>
-          <div style={{background:"#111122", border:"1px solid #222", borderRadius:16, padding:16, textAlign:"center"}}><div style={{fontSize:28}}>⬇️</div><h4>3. Download HD</h4><p style={{fontSize:12, color:"#888"}}>No watermark - Copyright safe original edit</p></div>
-        </div>
-      </div>
-
-      <div style={{padding:"30px 20px", background:"#0a0a18", borderTop:"1px solid #1a1a2e"}}>
-        <div style={{maxWidth:800, margin:"0 auto"}}>
-          <h2 style={{textAlign:"center", fontSize:20, fontWeight:800}}>FAQ</h2>
-          {[{q:"Matching video kyun nahi?", a:"Ab smart dictionary lagayi hai - chai=tea, railway=station, admi=man - ab match karega!"},{q:"FREE kitne?", a:"100 TEST - baad me 3 kar denge - Reset pe click karke 0 kar sakte ho"}].map((f,i)=><div key={i} onClick={()=>setFaqOpen(faqOpen===i?null:i)} style={{background:"#111122", border:"1px solid #222", borderRadius:10, padding:12, marginTop:10, cursor:"pointer"}}><div style={{display:"flex", justifyContent:"space-between", fontSize:13, fontWeight:600}}><span>{f.q}</span><span>{faqOpen===i?"−":"+"}</span></div>{faqOpen===i && <p style={{fontSize:12, color:"#888", marginTop:8}}>{f.a}</p>}</div>)}
-        </div>
-      </div>
-
-      <footer style={{padding:"20px", textAlign:"center", fontSize:11, color:"#666", borderTop:"1px solid #1a1a2e"}}>Life-AI • 100 TEST • Smart Matching Fix • Full Landing Restored • {freeUsed}/100</footer>
+      <footer style={{padding:"20px", textAlign:"center", fontSize:11, color:"#666", borderTop:"1px solid #1a1a2e"}}>Life-AI • 100 TEST • FLUX AI Live • {freeUsed}/100</footer>
     </div>
   );
 }
