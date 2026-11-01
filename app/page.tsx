@@ -1,7 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import FeaturesSection from "../components/landing/FeaturesSection";
 
 const FEATURES = [
   { id: "explainer", icon: "🎬", title: "AI Explainer Video Maker", desc: "Script se explain video - Business ke liye", color: "#ff006e" },
@@ -11,6 +10,26 @@ const FEATURES = [
   { id: "avatar", icon: "🧑‍🎤", title: "AI Avatar", desc: "Avatar se video - Canvas FREE", color: "#3a86ff" },
   { id: "translator", icon: "🌐", title: "Translator", desc: "Urdu/Hindi/English FREE", color: "#fb5607" },
 ];
+
+// ✅ FeaturesSection inline - koi import nahi, koi error nahi
+function FeaturesSection() {
+  return (
+    <div style={{ padding: "60px 20px", background: "#080810", borderTop: "1px solid #1a1a2e", borderBottom: "1px solid #1a1a2e" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", textAlign: "center" }}>
+        <h2 style={{ fontSize: 32, fontWeight: 800, color: "#fff", margin: 0 }}>All AI Tools in One Platform</h2>
+        <p style={{ color: "#888", fontSize: 14, marginTop: 8 }}>Top 3 FREE (Max 1 Min) • Bottom 3 PRO Only - Rs 8,000</p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16, marginTop: 30, textAlign: "left" }}>
+          <div style={{ background: "#111122", border: "1px solid #ff006e55", borderRadius: 20, padding: 20, color: "#fff" }}><div style={{ fontSize: 28 }}>🎬</div><h3 style={{ margin: "10px 0 4px" }}>AI Explainer Video Maker</h3><p style={{ fontSize: 12, color: "#888" }}>Script to video - FREE • 16:9 / 9:16</p></div>
+          <div style={{ background: "#111122", border: "1px solid #8338ec55", borderRadius: 20, padding: 20, color: "#fff" }}><div style={{ fontSize: 28 }}>🎵</div><h3 style={{ margin: "10px 0 4px" }}>AI Music Video Generator</h3><p style={{ fontSize: 12, color: "#888" }}>Music + visuals - FREE</p></div>
+          <div style={{ background: "#111122", border: "1px solid #00ff8855", borderRadius: 20, padding: 20, color: "#fff" }}><div style={{ fontSize: 28 }}>🎥</div><h3 style={{ margin: "10px 0 4px" }}>AI Video Generator</h3><p style={{ fontSize: 12, color: "#888" }}>MAIN - 3 FREE videos</p></div>
+          <div style={{ background: "#0e0e14", border: "1px solid #222", borderRadius: 20, padding: 20, color: "#fff", opacity: 0.8 }}><div style={{ fontSize: 28 }}>🎙️</div><h3 style={{ margin: "10px 0 4px" }}>AI Voiceover</h3><p style={{ fontSize: 12, color: "#888" }}>PRO Only - SIDE PE</p></div>
+          <div style={{ background: "#0e0e14", border: "1px solid #222", borderRadius: 20, padding: 20, color: "#fff", opacity: 0.8 }}><div style={{ fontSize: 28 }}>🧑‍🎤</div><h3 style={{ margin: "10px 0 4px" }}>AI Avatar</h3><p style={{ fontSize: 12, color: "#888" }}>PRO Only</p></div>
+          <div style={{ background: "#0e0e14", border: "1px solid #222", borderRadius: 20, padding: 20, color: "#fff", opacity: 0.8 }}><div style={{ fontSize: 28 }}>🌐</div><h3 style={{ margin: "10px 0 4px" }}>AI Translator</h3><p style={{ fontSize: 12, color: "#888" }}>PRO Only - Urdu</p></div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function LandingPage() {
   const router = useRouter();
