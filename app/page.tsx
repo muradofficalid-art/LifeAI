@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import FeaturesSection from "../components/landing/FeaturesSection";
 
 const FEATURES = [
   { id: "explainer", icon: "🎬", title: "AI Explainer Video Maker", desc: "Script se explain video - Business ke liye", color: "#ff006e" },
@@ -20,7 +21,7 @@ export default function LandingPage() {
   const [freeUsed, setFreeUsed] = useState(0);
   const [showAuth, setShowAuth] = useState(false);
   const [authMode, setAuthMode] = useState<"login"|"signup">("signup");
-  const [ratio, setRatio] = useState<"16:9"|"9:16">("16:9"); // ✅ NEW RATIO
+  const [ratio, setRatio] = useState<"16:9"|"9:16">("16:9");
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(()=>{
@@ -44,7 +45,6 @@ export default function LandingPage() {
     try {
       const canvas = canvasRef.current!;
       const ctx = canvas.getContext('2d')!;
-      // ✅ RATIO LOGIC - 16:9 aur 9:16
       if(ratio === "16:9"){
         canvas.width = 1280; canvas.height = 720;
       } else {
@@ -78,7 +78,7 @@ export default function LandingPage() {
 
       recorder.start();
       let frame = 0;
-      const totalFrames = 60 * 30; // ✅ FREE MAX 1 MINUTE = 60 sec * 30fps = 1800 frames
+      const totalFrames = 60 * 30;
 
       const draw = () => {
         if(frame >= totalFrames){ recorder.stop(); return; }
@@ -133,7 +133,6 @@ export default function LandingPage() {
             <input value={idea} onChange={e=>setIdea(e.target.value)} placeholder="Create a faceless TikTok video about 5 money habits..." style={{flex:1, background:"transparent", border:"none", color:"#fff", outline:"none", fontSize:14}}/>
             <button onClick={generateOnLanding} disabled={generating} style={{background: generating ? "#555" : "#ff006e", color:"#fff", border:"none", padding:"10px 18px", borderRadius:12, cursor:"pointer", fontWeight:600}}>{generating ? `${progress}%` : "Generate video →"}</button>
           </div>
-          {/* ✅ NEW - RATIO SELECTOR - BASS YE ADD HUA */}
           <div style={{display:"flex", gap:8, marginTop:10, justifyContent:"center"}}>
             <button onClick={()=>setRatio("16:9")} style={{background: ratio==="16:9" ? "#ff006e" : "#1a1a2e", color:"#fff", border:`1px solid ${ratio==="16:9" ? "#ff006e" : "#333"}`, padding:"6px 14px", borderRadius:20, cursor:"pointer", fontSize:12, fontWeight:600}}>📺 16:9 - YouTube</button>
             <button onClick={()=>setRatio("9:16")} style={{background: ratio==="9:16" ? "#ff006e" : "#1a1a2e", color:"#fff", border:`1px solid ${ratio==="9:16" ? "#ff006e" : "#333"}`, padding:"6px 14px", borderRadius:20, cursor:"pointer", fontSize:12, fontWeight:600}}>📱 9:16 - TikTok/Reels</button>
@@ -174,6 +173,9 @@ export default function LandingPage() {
           ))}
         </div>
       </div>
+
+      {/* ✅ NEW - 6 AI TOOLS CARDS - IMPORTED */}
+      <FeaturesSection />
 
       <div style={{padding:20, maxWidth:1000, margin:"20px auto"}}>
         <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:20, fontSize:12, color:"#888", borderTop:"1px solid #1a1a2e", paddingTop:20}}>
