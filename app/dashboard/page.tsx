@@ -30,18 +30,19 @@ export default function Dashboard() {
   const [showVoice, setShowVoice] = useState(false);
   const [creating, setCreating] = useState(false);
 
+  // Top 5 Buttons States
+  const [openMenu, setOpenMenu] = useState<null | 'upgrade' | 'auto' | 'help' | 'notif' | 'profile'>(null);
+
   const handleCreate = () => {
     if(!idea.trim()){ alert("Jan pehle idea likho! Example: 5 money habits"); return; }
     setCreating(true);
     setTimeout(()=>{
       setCreating(false);
-      // ✅ Idea leke script page pe jao
       router.push(`/dashboard/script-to-video?idea=${encodeURIComponent(idea)}&voice=${encodeURIComponent(voice)}`);
     }, 500);
   };
 
   const handleWorkflow = (w:any) => {
-    // ✅ FIX - Script to video pe click = naya page khulega Fliki jaisa
     if(w.id === 'script'){
       router.push('/dashboard/script-to-video');
       return;
@@ -50,12 +51,160 @@ export default function Dashboard() {
     }
   };
 
+  const closeAll = () => setOpenMenu(null);
+
   return (
-    <div style={{background:"#0f0a1f", color:"#fff", minHeight:"100vh", fontFamily:"system-ui", paddingBottom:80}}>
-      <div style={{padding:"12px 16px", display:"flex", justifyContent:"space-between", alignItems:"center"}}>
+    <div style={{background:"#0f0a1f", color:"#fff", minHeight:"100vh", fontFamily:"system-ui", paddingBottom:80, position:"relative"}}>
+      {/* TOP HEADER WITH 5 BUTTONS */}
+      <div style={{padding:"12px 16px", display:"flex", justifyContent:"space-between", alignItems:"center", position:"sticky", top:0, zIndex:50, background:"#0f0a1f"}}>
         <div style={{width:32, height:32, background:"#ff006e", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer"}} onClick={()=>router.push('/')}>●</div>
-        <div style={{background:"#ff006e", color:"#fff", padding:"6px 14px", borderRadius:20, fontSize:12, fontWeight:700, cursor:"pointer"}}>◆ Rg</div>
+        
+        {/* 5 Buttons - Top Right Corner */}
+        <div style={{display:"flex", gap:8, alignItems:"center"}}>
+          {/* 1 - Diamond Upgrade */}
+          <button onClick={()=> setOpenMenu(openMenu==='upgrade'?null:'upgrade')} style={{width:36, height:36, background: openMenu==='upgrade'?"#ff006e":"#1e1438", border:"1px solid #2a1e4e", borderRadius:10, cursor:"pointer", fontSize:14}}>💎</button>
+          {/* 2 - Automation Rg */}
+          <button onClick={()=> setOpenMenu(openMenu==='auto'?null:'auto')} style={{background: openMenu==='auto'?"#ff006e":"#1e1438", border:"1px solid #2a1e4e", color:"#fff", padding:"6px 14px", borderRadius:20, fontSize:12, fontWeight:700, cursor:"pointer"}}>◆ Rg</button>
+          {/* 3 - Help */}
+          <button onClick={()=> setOpenMenu(openMenu==='help'?null:'help')} style={{width:36, height:36, background: openMenu==='help'?"#ff006e":"#1e1438", border:"1px solid #2a1e4e", borderRadius:10, cursor:"pointer", fontSize:14, color:"#fff"}}>❓</button>
+          {/* 4 - Bell */}
+          <button onClick={()=> setOpenMenu(openMenu==='notif'?null:'notif')} style={{width:36, height:36, background: openMenu==='notif'?"#ff006e":"#1e1438", border:"1px solid #2a1e4e", borderRadius:10, cursor:"pointer", fontSize:14, color:"#fff", position:"relative"}}>🔔<span style={{position:"absolute", top:-2, right:-2, width:8, height:8, background:"#ff006e", borderRadius:"50%"}}></span></button>
+          {/* 5 - Profile */}
+          <button onClick={()=> setOpenMenu(openMenu==='profile'?null:'profile')} style={{width:36, height:36, background:"#ff006e", border:"1px solid #ff006e", borderRadius:"50%", cursor:"pointer", fontSize:12, fontWeight:700}}>👤</button>
+        </div>
       </div>
+
+      {/* DROPDOWNS / MODALS */}
+      {openMenu && (
+        <div onClick={closeAll} style={{position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", zIndex:60}}></div>
+      )}
+
+      {/* 1 - Upgrade Modal */}
+      {openMenu==='upgrade' && (
+        <div style={{position:"fixed", top:60, right:10, left:10, maxWidth:700, margin:"0 auto", background:"#1a1232", border:"1px solid #3a2e6e", borderRadius:20, zIndex:70, padding:16, maxHeight:"85vh", overflowY:"auto"}}>
+          <div style={{display:"flex", justifyContent:"space-between", alignItems:"center"}}><h3 style={{margin:0}}>💎 Upgrade Plan</h3><button onClick={closeAll} style={{background:"#1e1438", border:"none", color:"#fff", width:28, height:28, borderRadius:"50%", cursor:"pointer"}}>✕</button></div>
+          <div style={{background:"#ff006e22", color:"#ff88b0", padding:"8px 12px", borderRadius:10, fontSize:12, marginTop:12, textAlign:"center"}}>HALLOWEEN SALE - 40% off - Code: FLIKIHALLOWEEN40</div>
+          <div style={{display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10, marginTop:14}}>
+            {[
+              {name:"Basic", price:"Rs 2,299", sub:"/user/month", c:"60 credits/month", f:["Full HD 1080p","No watermark","1000 voices","200 ultra realistic","Videos up to 5 min"]},
+              {name:"Standard", price:"Rs 7,799", sub:"/user/month", c:"180 credits/month", popular:true, f:["Full HD 1080p","1000 voices 500 ultra","80+ languages","Videos up to 15 min","Translated 80+ langs","Voice cloning","AI avatars","Brand kit"]},
+              {name:"Premium", price:"Rs 23,999", sub:"/user/month", c:"600 credits/month", f:["2000+ voices","Videos up to 40 min","All AI avatars","3 voice clones","Team workspace","API access"]},
+            ].map(p=>(
+              <div key={p.name} style={{background: p.popular?"#ff006e15":"#0f0a1f", border: p.popular?"2px solid #ff006e":"1px solid #2a1e4e", borderRadius:14, padding:12}}>
+                {p.popular && <div style={{fontSize:10, background:"#ff006e", padding:"2px 8px", borderRadius:10, textAlign:"center", marginBottom:6}}>Most popular</div>}
+                <div style={{fontWeight:700, fontSize:13}}>{p.name}</div>
+                <div style={{fontSize:16, fontWeight:800, marginTop:4}}>{p.price}</div>
+                <div style={{fontSize:9, color:"#888"}}>{p.sub}</div>
+                <div style={{fontSize:10, marginTop:6, color:"#00ff88"}}>{p.c}</div>
+                <div style={{marginTop:8}}>{p.f.map(ff=><div key={ff} style={{fontSize:9, color:"#bbb", marginTop:3}}>• {ff}</div>)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 2 - Automation */}
+      {openMenu==='auto' && (
+        <div style={{position:"fixed", top:60, right:10, left:10, maxWidth:600, margin:"0 auto", background:"#1a1232", border:"1px solid #3a2e6e", borderRadius:20, zIndex:70, padding:16, maxHeight:"85vh", overflowY:"auto"}}>
+          <div style={{display:"flex", justifyContent:"space-between"}}><h3 style={{margin:0}}>◆ Rg Automation</h3><button onClick={closeAll} style={{background:"#1e1438", border:"none", color:"#fff", width:28, height:28, borderRadius:"50%", cursor:"pointer"}}>✕</button></div>
+          <div style={{marginTop:12, color:"#bbb", fontSize:12}}>Connect Zapier, Make, n8n, or REST API to trigger video creation automatically...</div>
+          <div style={{display:"flex", gap:8, marginTop:12, flexWrap:"wrap"}}>
+            <div style={{background:"#ff006e", padding:"6px 12px", borderRadius:10, fontSize:11, cursor:"pointer"}}>+ Create key</div>
+            <div style={{background:"#1e1438", border:"1px solid #2a1e4e", padding:"6px 12px", borderRadius:10, fontSize:11}}>Zapier guide</div>
+            <div style={{background:"#1e1438", border:"1px solid #2a1e4e", padding:"6px 12px", borderRadius:10, fontSize:11}}>Make guide</div>
+            <div style={{background:"#1e1438", border:"1px solid #2a1e4e", padding:"6px 12px", borderRadius:10, fontSize:11}}>API doc</div>
+          </div>
+          <div style={{marginTop:14, display:"grid", gap:10}}>
+            {[
+              {t:"Zapier Integration", d:"Turn Google Sheets rows into videos and auto-publish to YouTube"},
+              {t:"Make Integration", d:"Convert blog posts into videos and auto-upload to any platform"},
+              {t:"REST TTS API (Enterprise-only)", d:"Full programmatic control, generate audio content from any codebase"},
+              {t:"No-Code Workflows", d:"No developers needed, Visual builders handle entire flow"},
+            ].map(i=>(
+              <div key={i.t} style={{background:"#0f0a1f", border:"1px solid #2a1e4e", borderRadius:12, padding:12}}>
+                <div style={{fontWeight:700, fontSize:12}}>{i.t}</div>
+                <div style={{fontSize:11, color:"#888", marginTop:4}}>{i.d}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{marginTop:12, background:"#0f0a1f", borderRadius:12, padding:10}}>
+            <div style={{fontSize:11, color:"#888"}}>How it works:</div>
+            <div style={{fontSize:11, marginTop:4}}>1. Create an API Key → 2. Connect Your Platform → 3. Auto-Generate Videos</div>
+          </div>
+        </div>
+      )}
+
+      {/* 3 - Help */}
+      {openMenu==='help' && (
+        <div style={{position:"fixed", top:60, right:16, width:220, background:"#1a1232", border:"1px solid #3a2e6e", borderRadius:16, zIndex:70, overflow:"hidden"}}>
+          {[
+            "▶️ Watch tutorial video",
+            "✨ What's new",
+            "📚 Resources and guide",
+            "👥 Community",
+            "📧 Send us an email",
+            "💬 Chat",
+          ].map(item=>(
+            <div key={item} onClick={()=>{alert(item+" - Coming soon jan!"); closeAll();}} style={{padding:"12px 14px", fontSize:12, cursor:"pointer", borderBottom:"1px solid #2a1e4e"}}>{item}</div>
+          ))}
+        </div>
+      )}
+
+      {/* 4 - Notification */}
+      {openMenu==='notif' && (
+        <div style={{position:"fixed", top:60, right:16, width:320, background:"#1a1232", border:"1px solid #3a2e6e", borderRadius:16, zIndex:70, padding:12, maxHeight:"70vh", overflowY:"auto"}}>
+          <div style={{display:"flex", justifyContent:"space-between", alignItems:"center"}}><h4 style={{margin:0, fontSize:13}}>Notifications</h4><span onClick={()=>alert("Marked all as read jan!")} style={{fontSize:10, color:"#ff006e", cursor:"pointer"}}>Mark all as read</span></div>
+          <div style={{marginTop:10, display:"grid", gap:8}}>
+            {[
+              {title:'File "How to find hidden cameras in Airbnb: blinking green smoke detector exposes cheap rental\'s cameras" is now ready to download.', time:"25 days ago"},
+              {title:'File "Aishas Mysterious Disappearance" could not be exported. Please try again.', time:"6 months ago"},
+              {title:'File "Aisha\'s Mysterious Disappearance" is now ready to download.', time:"6 months ago"},
+              {title:'Welcome to Fliki! We are excited to have you on board.', time:"6 months ago"},
+            ].map((n,i)=>(
+              <div key={i} style={{background:"#0f0a1f", border:"1px solid #2a1e4e", borderRadius:10, padding:10}}>
+                <div style={{fontSize:11}}>{n.title}</div>
+                <div style={{fontSize:9, color:"#666", marginTop:4}}>{n.time}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 5 - Profile */}
+      {openMenu==='profile' && (
+        <div style={{position:"fixed", top:60, right:10, left:10, maxWidth:700, margin:"0 auto", background:"#1a1232", border:"1px solid #3a2e6e", borderRadius:20, zIndex:70, padding:16, maxHeight:"85vh", overflowY:"auto"}}>
+          <div style={{display:"flex", justifyContent:"space-between"}}><h3 style={{margin:0}}>👤 Profile</h3><button onClick={closeAll} style={{background:"#1e1438", border:"none", color:"#fff", width:28, height:28, borderRadius:"50%", cursor:"pointer"}}>✕</button></div>
+          <div style={{display:"flex", gap:6, marginTop:12, flexWrap:"wrap"}}>
+            {["Usage","Profile","Platforms","Rewards","Referrals","Affiliate","Logout"].map(t=>(
+              <div key={t} style={{background: t==="Usage"?"#ff006e":"#1e1438", border:"1px solid #2a1e4e", padding:"5px 10px", borderRadius:20, fontSize:11, cursor:"pointer"}}>{t}</div>
+            ))}
+          </div>
+          <div style={{marginTop:12, background:"#0f0a1f", border:"1px solid #2a1e4e", borderRadius:12, padding:12}}>
+            <div style={{fontSize:11, color:"#888"}}>Plan: Free monthly (credits reset on Dec 1, 2026)</div>
+            <div style={{marginTop:8, height:6, background:"#1e1438", borderRadius:10}}><div style={{width:"30%", height:"100%", background:"#ff006e", borderRadius:10}}></div></div>
+            <div style={{fontSize:10, color:"#666", marginTop:6}}>How credits work</div>
+          </div>
+          <div style={{background:"#ff006e22", color:"#ff88b0", padding:"8px 12px", borderRadius:10, fontSize:11, marginTop:12, textAlign:"center"}}>HALLOWEEN SALE! - FLIKIHALLOWEEN40 code 40% off annual plans</div>
+          <div style={{fontWeight:700, marginTop:12, fontSize:13}}>Subscribe to Fliki:</div>
+          <div style={{display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10, marginTop:10}}>
+            {[
+              {name:"Basic", price:"Rs 2,299", d:"60 credits/month - 5 min export - 1000 voices 200 ultra"},
+              {name:"Standard", price:"Rs 7,799", d:"180 credits/month - 15 min - 1000 voices 500 ultra - 80+ languages - voice cloning - AI avatars - Brand kit - Explainer/motion/music videos", pop:true},
+              {name:"Premium", price:"Rs 23,999", d:"600 credits/month - 40 min - 2000+ voices - All AI avatars - 3 voice clones - Team workspace - API access"},
+            ].map(p=>(
+              <div key={p.name} style={{background: p.pop?"#ff006e15":"#0f0a1f", border: p.pop?"2px solid #ff006e":"1px solid #2a1e4e", borderRadius:14, padding:10}}>
+                {p.pop && <div style={{fontSize:9, background:"#ff006e", padding:"2px 6px", borderRadius:10, textAlign:"center", marginBottom:5}}>Most popular</div>}
+                <div style={{fontWeight:700, fontSize:12}}>{p.name}</div>
+                <div style={{fontSize:14, fontWeight:800, marginTop:2}}>{p.price}</div>
+                <div style={{fontSize:8, color:"#bbb", marginTop:4}}>{p.d}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{marginTop:12, fontSize:10, color:"#666"}}>
+            Compare: Credits, Export length, Standard voices, Ultra-realistic voices, AI Video, Publications per month, Series, Brand kits, Scene limits, Integrations, Bulk create, AI Avatar, Custom characters, Voice cloning
+          </div>
+        </div>
+      )}
 
       <div style={{textAlign:"center", padding:"10px 20px 0"}}>
         <h2 style={{margin:0, fontSize:16, fontWeight:600}}>Let's get started, public</h2>
