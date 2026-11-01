@@ -1,7 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import FeaturesSection from "../components/landing/FeaturesSection";
+import FeaturesSection from "./components/landing/FeaturesSection";
 
 const FEATURES = [
   { id: "explainer", icon: "🎬", title: "AI Explainer Video Maker", desc: "Script se explain video - Business ke liye", color: "#ff006e" },
@@ -174,7 +174,6 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* ✅ NEW - 6 AI TOOLS CARDS - IMPORTED */}
       <FeaturesSection />
 
       <div style={{padding:20, maxWidth:1000, margin:"20px auto"}}>
